@@ -1,0 +1,5 @@
+{
+  "name": "AVR8js Arduino Simulator",
+  "description": "A comprehensive Arduino (Uno, Nano, Mega) simulator using avr8js and Wokwi Elements. Features a component palette, a pannable/zoomable canvas for arranging components, and a light/dark theme toggle. Compile and run Arduino code directly in your browser.",
+  "requestFramePermissions": []
+}

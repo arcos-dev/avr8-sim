@@ -1,0 +1,139 @@
+/* Estilos para o sistema de fiação com cabos elásticos vintage */
+
+.wiring-system {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Animações para os cabos */
+@keyframes cable-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+@keyframes cable-glow {
+  0% { filter: drop-shadow(0 0 2px rgba(255,255,255,0.3)); }
+  50% { filter: drop-shadow(0 0 6px rgba(255,255,255,0.6)); }
+  100% { filter: drop-shadow(0 0 2px rgba(255,255,255,0.3)); }
+}
+
+/* Efeito de cabo sendo conectado */
+.cable-connecting {
+  animation: cable-pulse 0.5s ease-in-out;
+}
+
+/* Efeito de cabo ativo (com sinal passando) */
+.cable-active {
+  animation: cable-glow 2s ease-in-out infinite;
+}
+
+/* Efeito hover para os pinos */
+.pin-hover {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));
+  transition: all 0.2s ease-out;
+}
+
+/* Efeito de cabo esticando */
+.cable-stretching {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Efeito de cabo relaxando */
+.cable-relaxing {
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Estilo para cabos de diferentes tipos */
+.cable-power {
+  filter: drop-shadow(0 0 3px rgba(255, 0, 0, 0.4));
+}
+
+.cable-ground {
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6));
+}
+
+.cable-signal {
+  filter: drop-shadow(0 0 3px rgba(0, 255, 0, 0.4));
+}
+
+.cable-data {
+  filter: drop-shadow(0 0 3px rgba(0, 0, 255, 0.4));
+}
+
+/* Efeito de cabo vintage com textura */
+.cable-vintage {
+  stroke-dasharray: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Animação de sinal passando pelo cabo */
+@keyframes signal-flow {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -20; }
+}
+
+.cable-signal-flow {
+  stroke-dasharray: 5 5;
+  animation: signal-flow 1s linear infinite;
+}
+
+/* Efeito de cabo desconectado */
+.cable-disconnected {
+  opacity: 0.3;
+  stroke-dasharray: 3 3;
+  animation: cable-pulse 1s ease-in-out infinite;
+}
+
+/* Efeito de cabo selecionado */
+.cable-selected {
+  stroke-width: 4px !important;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+}
+
+/* Transições suaves para mudanças de posição */
+.cable-smooth-transition {
+  transition: d 0.2s ease-out;
+}
+
+/* Efeito de cabo sob tensão */
+.cable-tension-high {
+  stroke-width: 2.8px;
+  opacity: 0.9;
+}
+
+.cable-tension-low {
+  stroke-width: 3.2px;
+  opacity: 1;
+}
+
+/* Efeito de cabo balançando */
+@keyframes cable-sway {
+  0% { transform: translateY(0px); }
+  25% { transform: translateY(-1px); }
+  50% { transform: translateY(0px); }
+  75% { transform: translateY(1px); }
+  100% { transform: translateY(0px); }
+}
+
+.cable-sway {
+  animation: cable-sway 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Efeito de cabo com interferência */
+@keyframes cable-interference {
+  0% { opacity: 1; }
+  10% { opacity: 0.9; }
+  20% { opacity: 1; }
+  30% { opacity: 0.95; }
+  40% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+.cable-interference {
+  animation: cable-interference 2s ease-in-out infinite;
+}

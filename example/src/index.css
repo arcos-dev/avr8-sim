@@ -1,0 +1,298 @@
+@import "tailwindcss";
+
+/* VS Code Dark Theme Variables */
+:root {
+  /* Core colors */
+  --vscode-foreground: #cccccc;
+  --vscode-background: #1e1e1e;
+  --vscode-focusBorder: #007acc;
+  --vscode-descriptionForeground: #cccccc99;
+  
+  /* Editor colors */
+  --vscode-editor-background: #1e1e1e;
+  --vscode-editor-foreground: #d4d4d4;
+  --vscode-editorLineNumber-foreground: #858585;
+  --vscode-editorCursor-foreground: #aeafad;
+  
+  /* Panel colors */
+  --vscode-panel-background: #252526;
+  --vscode-panel-border: #2d2d30;
+  --vscode-panelTitle-activeForeground: #e7e7e7;
+  
+  /* Sidebar colors */
+  --vscode-sideBar-background: #252526;
+  --vscode-sideBar-foreground: #cccccc;
+  --vscode-sideBar-border: #2d2d30;
+  --vscode-sideBarTitle-foreground: #cccccc;
+  
+  /* Activity bar colors */
+  --vscode-activityBar-background: #333333;
+  --vscode-activityBar-foreground: #ffffff;
+  --vscode-activityBar-border: #2d2d30;
+  
+  /* Title bar colors */
+  --vscode-titleBar-activeBackground: #3c3c3c;
+  --vscode-titleBar-activeForeground: #cccccc;
+  --vscode-titleBar-inactiveBackground: #3c3c3c;
+  --vscode-titleBar-inactiveForeground: #cccccc99;
+  
+  /* Button colors */
+  --vscode-button-background: #0e639c;
+  --vscode-button-foreground: #ffffff;
+  --vscode-button-hoverBackground: #1177bb;
+  --vscode-button-border: transparent;
+  --vscode-button-secondaryBackground: #3a3d41;
+  --vscode-button-secondaryForeground: #cccccc;
+  --vscode-button-secondaryHoverBackground: #45494e;
+  
+  /* Input colors */
+  --vscode-input-background: #3c3c3c;
+  --vscode-input-foreground: #cccccc;
+  --vscode-input-border: #3c3c3c;
+  --vscode-input-placeholderForeground: #cccccc80;
+  --vscode-inputOption-hoverBackground: #5a5d5e;
+  
+  /* Dropdown colors */
+  --vscode-dropdown-background: #3c3c3c;
+  --vscode-dropdown-foreground: #cccccc;
+  --vscode-dropdown-border: #3c3c3c;
+  
+  /* Toolbar colors */
+  --vscode-toolbar-hoverBackground: #5a5d5e;
+  
+  /* Tab colors */
+  --vscode-tab-activeBackground: #252526;
+  --vscode-tab-activeForeground: #ffffff;
+  --vscode-tab-activeBorder: #73c991;
+  --vscode-tab-inactiveBackground: #252526;
+  --vscode-tab-inactiveForeground: #969696;
+  --vscode-tab-border: #252526;
+  
+  /* Testing colors */
+  --vscode-testing-iconPassed: #73c991;
+  
+  /* Terminal colors */
+  --vscode-terminal-background: #1e1e1e;
+  --vscode-terminal-foreground: #cccccc;
+  --vscode-terminal-ansiBlack: #000000;
+  --vscode-terminal-ansiRed: #cd3131;
+  --vscode-terminal-ansiGreen: #0dbc79;
+  --vscode-terminal-ansiYellow: #e5e510;
+  --vscode-terminal-ansiBlue: #2472c8;
+  --vscode-terminal-ansiMagenta: #bc3fbc;
+  --vscode-terminal-ansiCyan: #11a8cd;
+  --vscode-terminal-ansiWhite: #e5e5e5;
+  
+  /* Status bar colors */
+  --vscode-statusBar-background: #007acc;
+  --vscode-statusBar-foreground: #ffffff;
+  --vscode-statusBar-border: transparent;
+  
+  /* Menu colors */
+  --vscode-menu-background: #252526;
+  --vscode-menu-foreground: #cccccc;
+  --vscode-menu-selectionBackground: #094771;
+  --vscode-menu-selectionForeground: #ffffff;
+  --vscode-menu-separatorBackground: #606060;
+  
+  /* Scrollbar colors */
+  --vscode-scrollbar-shadow: #000000;
+  --vscode-scrollbarSlider-background: #79797966;
+  --vscode-scrollbarSlider-hoverBackground: #646464b3;
+  --vscode-scrollbarSlider-activeBackground: #bfbfbf66;
+}
+
+/* VS Code Light Theme Variables */
+:root[data-theme="light"] {
+  /* Core colors */
+  --vscode-foreground: #24292e;
+  --vscode-background: #ffffff;
+  --vscode-focusBorder: #0366d6;
+  --vscode-descriptionForeground: #6a737d;
+  
+  /* Editor colors */
+  --vscode-editor-background: #ffffff;
+  --vscode-editor-foreground: #24292e;
+  --vscode-editorLineNumber-foreground: #1b1f234d;
+  --vscode-editorCursor-foreground: #044289;
+  
+  /* Panel colors */
+  --vscode-panel-background: #f6f8fa;
+  --vscode-panel-border: #e1e4e8;
+  --vscode-panelTitle-activeForeground: #24292e;
+  
+  /* Sidebar colors */
+  --vscode-sideBar-background: #f6f8fa;
+  --vscode-sideBar-foreground: #24292e;
+  --vscode-sideBar-border: #e1e4e8;
+  --vscode-sideBarTitle-foreground: #24292e;
+  
+  /* Activity bar colors */
+  --vscode-activityBar-background: #2f363d;
+  --vscode-activityBar-foreground: #ffffff;
+  --vscode-activityBar-border: #e1e4e8;
+  
+  /* Title bar colors */
+  --vscode-titleBar-activeBackground: #f6f8fa;
+  --vscode-titleBar-activeForeground: #24292e;
+  --vscode-titleBar-inactiveBackground: #f6f8fa;
+  --vscode-titleBar-inactiveForeground: #6a737d;
+  
+  /* Button colors */
+  --vscode-button-background: #0366d6;
+  --vscode-button-foreground: #ffffff;
+  --vscode-button-hoverBackground: #0256cc;
+  --vscode-button-border: transparent;
+  --vscode-button-secondaryBackground: #e1e4e8;
+  --vscode-button-secondaryForeground: #24292e;
+  --vscode-button-secondaryHoverBackground: #d1d5da;
+  
+  /* Input colors */
+  --vscode-input-background: #ffffff;
+  --vscode-input-foreground: #24292e;
+  --vscode-input-border: #e1e4e8;
+  --vscode-input-placeholderForeground: #6a737d;
+  --vscode-inputOption-hoverBackground: #f1f3f4;
+  
+  /* Dropdown colors */
+  --vscode-dropdown-background: #ffffff;
+  --vscode-dropdown-foreground: #24292e;
+  --vscode-dropdown-border: #e1e4e8;
+  
+  /* Toolbar colors */
+  --vscode-toolbar-hoverBackground: #f1f3f4;
+  
+  /* Tab colors */
+  --vscode-tab-activeBackground: #ffffff;
+  --vscode-tab-activeForeground: #24292e;
+  --vscode-tab-activeBorder: #28a745;
+  --vscode-tab-inactiveBackground: #ffffff;
+  --vscode-tab-inactiveForeground: #6a737d;
+  --vscode-tab-border: #e1e4e8;
+  
+  /* Testing colors */
+  --vscode-testing-iconPassed: #28a745;
+  
+  /* Terminal colors */
+  --vscode-terminal-background: #ffffff;
+  --vscode-terminal-foreground: #24292e;
+  --vscode-terminal-ansiBlack: #24292e;
+  --vscode-terminal-ansiRed: #d73a49;
+  --vscode-terminal-ansiGreen: #28a745;
+  --vscode-terminal-ansiYellow: #ffd33d;
+  --vscode-terminal-ansiBlue: #0366d6;
+  --vscode-terminal-ansiMagenta: #ea4aaa;
+  --vscode-terminal-ansiCyan: #17a2b8;
+  --vscode-terminal-ansiWhite: #6a737d;
+  
+  /* Status bar colors */
+  --vscode-statusBar-background: #0366d6;
+  --vscode-statusBar-foreground: #ffffff;
+  --vscode-statusBar-border: transparent;
+  
+  /* Menu colors */
+  --vscode-menu-background: #ffffff;
+  --vscode-menu-foreground: #24292e;
+  --vscode-menu-selectionBackground: #0366d6;
+  --vscode-menu-selectionForeground: #ffffff;
+  --vscode-menu-separatorBackground: #e1e4e8;
+  
+  /* Scrollbar colors */
+  --vscode-scrollbar-shadow: #6a737d33;
+  --vscode-scrollbarSlider-background: #959da533;
+  --vscode-scrollbarSlider-hoverBackground: #959da544;
+  --vscode-scrollbarSlider-activeBackground: #959da588;
+}
+
+/* Global styles */
+* {
+  box-sizing: border-box;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+  background-color: var(--vscode-background);
+  color: var(--vscode-foreground);
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--vscode-background);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: var(--vscode-background);
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  color: var(--vscode-foreground);
+}
+
+button {
+  border-radius: 4px;
+  border: 1px solid var(--vscode-button-border);
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vscode-scrollbarSlider-background);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--vscode-scrollbarSlider-activeBackground);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

@@ -1,0 +1,2416 @@
+/* Custom Fonts */
+@font-face {
+  font-family: 'TX-02-Data';
+  src: url('./assets/fonts/TX-02-Data-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TX-02-Data';
+  src: url('./assets/fonts/TX-02-Data-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Berkeley Arrow';
+  src: url('./assets/fonts/BerkeleyArrow-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Theme Variables */
+:root[data-theme="dark"] {
+  --grid-background: #1e1e1e;
+  --grid-border: #3c3c3c;
+  --component-background: #2d2d30;
+  --component-border: #464647;
+  --component-hover: #37373d;
+  --serial-header-bg: #2d2d30;
+  --serial-header-border: #464647;
+  --panel-background: #252526;
+  --panel-border: #3c3c3c;
+  --panel-title-color: #e1e4e8;
+  --panel-text-color: #e1e4e8;
+  --panel-text-secondary: #8b949e;
+  --input-background: #3c3c3c;
+  --input-border: #464647;
+  --input-text: #cccccc;
+  --button-background: #238be6;
+  --button-text: #ffffff;
+  --button-hover: #1177bb;
+  --success-background: #1a2e1a;
+  --success-text: #4ade80;
+  --success-border: #166534;
+}
+
+:root[data-theme="light"] {
+  --grid-background: #ffffff;
+  --grid-border: #e1e4e8;
+  --component-background: #f6f8fa;
+  --component-border: #d1d5da;
+  --component-hover: #f1f3f4;
+  --serial-header-bg: #f6f8fa;
+  --serial-header-border: #d1d5da;
+  --panel-background: #ffffff;
+  --panel-border: #e1e4e8;
+  --panel-title-color: #24292e;
+  --panel-text-color: #24292e;
+  --panel-text-secondary: #586069;
+  --input-background: #ffffff;
+  --input-border: #d1d5da;
+  --input-text: #24292e;
+  --button-background: #0366d6;
+  --button-text: #ffffff;
+  --button-hover: #0256cc;
+  --success-background: #d4edda;
+  --success-text: #155724;
+  --success-border: #c3e6cb;
+}
+
+/* App-specific styles */
+#root {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-foreground);
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* App Container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-foreground);
+}
+
+/* Header Styles */
+.app-header {
+  background-color: var(--vscode-titleBar-activeBackground);
+  border-bottom: 1px solid var(--vscode-panel-border);
+  padding: 12px 16px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--vscode-titleBar-activeForeground);
+  margin: 0;
+}
+
+.app-subtitle {
+  font-size: 0.875rem;
+  color: var(--vscode-descriptionForeground);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+  box-shadow: 0 2px 6px rgba(37, 37, 38, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-running {
+  background-color: var(--vscode-testing-iconPassed);
+  color: var(--vscode-button-foreground);
+}
+
+.status-stopped {
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+}
+
+/* Main Content */
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.desktop-layout {
+  flex-direction: row;
+}
+
+.mobile-layout {
+  flex-direction: column;
+}
+
+/* Info Panel */
+.info-panel {
+  background-color: var(--panel-background);
+  border-left: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.info-panel.expanded {
+  width: 320px;
+}
+
+.info-panel.collapsed {
+  width: 43px;
+}
+
+/* Info Panel Right (Below Controls) */
+.info-panel-right {
+  background-color: var(--panel-background);
+  border-left: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.info-panel-right.expanded {
+  /* Width is now controlled by inline styles and splitters */
+  min-width: 168px;
+  /* max-width removed to allow splitter control */
+}
+
+.info-panel-right.collapsed {
+  width: 43px;
+}
+
+.info-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.panel-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--panel-title-color);
+  margin: 0;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.panel-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--panel-text-color);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.panel-toggle-btn:hover {
+  background-color: var(--component-hover);
+  color: var(--panel-text-color);
+  opacity: 1;
+  box-shadow: 0 2px 6px rgba(37, 37, 38, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.info-panel.collapsed .panel-toggle-btn {
+  margin-right: -4px;
+}
+
+.info-panel-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+  padding: 12px;
+}
+
+.info-section {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.serial-section {
+  height: 256px;
+  border-top: 1px solid var(--panel-border);
+}
+
+/* Mobile Panel */
+.mobile-panel {
+  background-color: var(--panel-background);
+  border-top: 1px solid var(--panel-border);
+}
+
+.mobile-panel-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  display: flex;
+  justify-content: center;
+}
+
+.mobile-panel-toggle-btn {
+  background-color: var(--button-background);
+  color: var(--button-text);
+  border: 1px solid var(--button-background);
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mobile-panel-toggle-btn:hover {
+  background-color: var(--panel-background);
+  box-shadow: 0 2px 8px rgba(37, 37, 38, 0.3), 0 0 15px rgba(37, 37, 38, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+  border-color: var(--panel-border);
+}
+
+.mobile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px;
+}
+
+/* Components Panel */
+.components-panel {
+  background-color: var(--panel-background);
+  border-right: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.components-panel.expanded {
+  /* Width is now controlled by inline styles and splitters */
+  min-width: 216px;
+  max-width: 324px;
+}
+
+.components-panel.collapsed {
+  width: 64px;
+}
+
+.components-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.components-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--panel-title-color);
+  margin: 0;
+}
+
+.components-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.category-selector {
+  padding: 16px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.category-select {
+  width: 100%;
+  background-color: var(--input-background);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.category-select:focus {
+  border-color: var(--button-background);
+}
+
+.category-select option {
+  background-color: var(--input-background);
+  color: var(--input-text);
+}
+
+.components-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.components-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.component-item {
+  background-color: var(--component-background);
+  border: 1px solid var(--component-border);
+  border-radius: 6px;
+  padding: 12px;
+  cursor: grab;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.component-item:hover {
+  background-color: var(--component-hover);
+  border-color: var(--component-border);
+}
+
+.component-item:active {
+  cursor: grabbing;
+}
+
+.component-name {
+  font-weight: 500;
+  color: var(--panel-text-color);
+  margin-bottom: 4px;
+}
+
+.component-tag {
+  font-size: 0.75rem;
+  color: var(--panel-text-color);
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+.component-props {
+  font-size: 0.75rem;
+  color: var(--button-background);
+  font-weight: 500;
+}
+
+.prop-item {
+  margin-right: 8px;
+}
+
+.components-footer {
+  padding: 16px;
+  border-top: 1px solid var(--panel-border);
+  font-size: 0.75rem;
+  color: var(--panel-text-color);
+  opacity: 0.7;
+}
+
+/* Simulator Canvas Styles */
+.simulator-canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  background-color: var(--grid-background);
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.simulator-canvas .drop-zone {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  /* Remove all button default styles */
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.simulator-canvas .drop-zone:focus,
+.simulator-canvas .drop-zone:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: none !important;
+}
+
+.simulator-canvas .drop-zone:hover {
+  background: none !important;
+  border: none !important;
+}
+
+.simulator-canvas .drop-zone:active {
+  background: none !important;
+  border: none !important;
+  transform: none !important;
+}
+
+.grid-pattern {
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Bottom Serial Panel */
+.bottom-serial-panel {
+  background-color: var(--panel-background);
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  /* Height is now controlled by inline styles and splitters */
+  min-height: 50px; /* Reduzido para permitir minimização efetiva */
+  /* max-height removed to allow splitter control */
+  /* transition removed to allow smooth splitter resizing */
+}
+
+.serial-panel-header {
+  background-color: var(--serial-header-bg);
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--serial-header-border);
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  font-weight: 500;
+  color: var(--panel-title-color);
+}
+
+.serial-panel-content {
+  flex: 1;
+  overflow: hidden;
+  padding: 8px;
+}
+
+/* Info Panel Styles */
+.info-panel-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--panel-background);
+  color: var(--panel-text-color);
+}
+
+.info-panel-container.compact {
+  font-size: 0.75rem;
+}
+
+.info-panel-container.normal {
+  font-size: 0.875rem;
+}
+
+/* Info Panel Tabs */
+.info-panel-tabs {
+  display: flex;
+  background-color: var(--vscode-tab-inactiveBackground);
+  border-bottom: 1px solid var(--vscode-tab-border);
+  overflow-x: auto;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  color: var(--vscode-tab-inactiveForeground);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.8;
+  position: relative;
+  overflow: hidden;
+  outline: none;
+}
+
+.tab-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(37, 37, 38, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.tab-button:hover::before {
+  left: 100%;
+}
+
+.tab-button:hover {
+  color: var(--vscode-tab-activeForeground);
+  opacity: 1;
+  transform: translateY(-1px);
+  background-color: var(--vscode-tab-activeBackground);
+  box-shadow: 0 2px 8px rgba(37, 37, 38, 0.3), 0 0 15px rgba(37, 37, 38, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-bottom-color: var(--panel-background);
+}
+
+.tab-button.active {
+  background-color: var(--vscode-tab-activeBackground);
+  color: var(--vscode-tab-activeForeground);
+  border-bottom-color: var(--vscode-tab-activeBorder);
+  opacity: 1;
+  outline: none;
+}
+
+.tab-button:focus {
+  outline: none;
+}
+
+.tab-icon {
+  font-size: 0.875rem;
+}
+
+.tab-label {
+  font-weight: 500;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--button-background);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-label {
+  color: var(--panel-text-color);
+  opacity: 0.9;
+}
+
+.info-value {
+  color: var(--panel-text-color);
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.info-value.mono {
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+  color: var(--button-background);
+}
+
+.info-value.status-running {
+  color: #10b981;
+}
+
+.info-value.status-stopped {
+  color: #ef4444;
+}
+
+.info-value.performance {
+  color: var(--button-background);
+}
+
+.info-value.cycles {
+  color: #10b981;
+}
+
+.info-value.binary {
+  color: var(--panel-text-color);
+  opacity: 0.8;
+  font-size: 0.875rem;
+}
+
+.cpu-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.75rem;
+}
+
+/* LED Status Styles */
+.led-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.led-text {
+  min-width: 32px;
+  text-align: left;
+}
+
+.led-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transition: none;
+}
+
+.led-indicator.led-on {
+  background-color: #fbbf24;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5), 0 0 12px rgba(251, 191, 36, 0.3);
+  transition: none;
+}
+
+/* LED Colors - More realistic */
+.led-indicator.led-red {
+  background-color: #dc2626;
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.5), 0 0 12px rgba(220, 38, 38, 0.3);
+}
+
+.led-indicator.led-green {
+  background-color: #16a34a;
+  box-shadow: 0 0 8px rgba(22, 163, 74, 0.5), 0 0 12px rgba(22, 163, 74, 0.3);
+}
+
+.led-indicator.led-blue {
+  background-color: #2563eb;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.5), 0 0 12px rgba(37, 99, 235, 0.3);
+}
+
+.led-indicator.led-yellow {
+  background-color: #eab308;
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.5), 0 0 12px rgba(234, 179, 8, 0.3);
+}
+
+.led-indicator.led-fade-out {
+  animation: ledIndicatorFadeOut 200ms ease-in forwards;
+}
+
+.led-indicator.led-off {
+  background-color: var(--panel-border);
+}
+
+.led-text.led-on-text {
+  color: #fbbf24;
+}
+
+.led-text.led-off-text {
+  color: var(--panel-text-color);
+  opacity: 0.8;
+}
+
+/* Tab Content Specific Styles */
+.registers-section {
+  margin-top: 12px;
+}
+
+.subsection-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--button-background);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 8px 0;
+}
+
+.register-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.register-label {
+  color: var(--panel-text-color);
+  opacity: 0.7;
+  font-size: 0.7rem;
+}
+
+.register-value {
+  color: var(--button-background);
+  font-weight: 500;
+  font-size: 0.7rem;
+}
+
+.no-data {
+  color: var(--panel-text-color);
+  opacity: 0.7;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Help Tips */
+.help-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tip-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background-color: var(--component-hover);
+  border-radius: 6px;
+  border-left: 3px solid var(--button-background);
+}
+
+.tip-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  font-size: 0.75rem;
+  color: var(--panel-text-color);
+  line-height: 1.3;
+}
+
+/* Educational Tips (legacy) */
+.educational-tips {
+  font-size: 0.75rem;
+  color: var(--panel-text-color);
+  opacity: 0.8;
+  line-height: 1.4;
+}
+
+.educational-tips p {
+  margin: 4px 0;
+}
+
+/* Port Layout */
+.port-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.port-values {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.registers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  font-size: 0.75rem;
+}
+
+.ports-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+
+.port-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.component-dragging {
+  opacity: 0.9;
+  transform: scale(1.05);
+  transition: none !important;
+  z-index: 1000 !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth transitions for components when not being dragged */
+.simulator-component {
+  transition: transform 0.1s ease-out, box-shadow 0.2s ease;
+}
+
+.simulator-component:not(.component-dragging) {
+  transition: all 0.15s ease-out;
+}
+
+/* Splitter Styles */
+.splitter {
+  flex-shrink: 0;
+  position: relative;
+  background-color: var(--panel-border);
+  transition: background-color 0.2s ease;
+}
+
+.splitter:hover {
+  background-color: var(--button-background);
+}
+
+.components-splitter,
+.info-splitter {
+  width: 4px;
+  cursor: col-resize;
+}
+
+.serial-splitter {
+  height: 4px;
+  cursor: row-resize;
+  background-color: var(--panel-border);
+  position: relative;
+  z-index: 1000;
+  flex-shrink: 0;
+}
+
+.serial-splitter:hover {
+  background-color: var(--vscode-focusBorder);
+}
+
+/* Ensure splitters are visible and interactive */
+.splitter::before {
+  content: '';
+  position: absolute;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.components-splitter::before,
+.info-splitter::before {
+  width: 8px;
+  height: 100%;
+  left: -2px;
+  top: 0;
+}
+
+.serial-splitter::before {
+  width: 100%;
+  height: 8px;
+  left: 0;
+  top: -2px;
+  cursor: row-resize;
+  z-index: 1001;
+}
+
+.serial-splitter::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: transparent;
+  cursor: row-resize;
+  z-index: 1001;
+}
+
+.splitter:hover::before {
+  background-color: var(--button-background);
+  opacity: 0.3;
+}
+
+/* Simulation Controls */
+.simulation-controls {
+  background-color: var(--panel-background);
+  border-bottom: 1px solid var(--panel-border);
+  padding: 1rem;
+}
+
+.controls-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.controls-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.controls-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.control-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--vscode-button-border);
+  background: linear-gradient(135deg, var(--vscode-button-background) 0%, var(--vscode-input-background) 100%);
+  color: var(--vscode-button-foreground);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  outline: none;
+}
+
+.control-button:focus {
+  outline: none;
+}
+
+.control-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.control-button:hover::before {
+  left: 100%;
+}
+
+.control-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.control-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.control-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.start-button {
+  background: #22c55e;
+  color: #ffffff;
+  border: 1px solid #22c55e;
+  transition: all 0.3s ease;
+}
+
+.start-button:hover {
+  background: #16a34a;
+  border-color: #16a34a;
+  transform: translateY(-1px);
+}
+
+.stop-button {
+  background: #ef4444;
+  color: #ffffff;
+  border: 1px solid #ef4444;
+  transition: all 0.3s ease;
+}
+
+.stop-button:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.reset-button {
+  background: #6b7280;
+  color: #ffffff;
+  border: 1px solid #6b7280;
+  transition: all 0.3s ease;
+}
+
+.reset-button:hover {
+  background: #4b5563;
+  border-color: #4b5563;
+  transform: translateY(-1px);
+}
+
+.hex-button {
+  background: #0891b2;
+  color: #ffffff;
+  border: 1px solid #0891b2;
+  transition: all 0.3s ease;
+}
+
+.hex-button:hover {
+  background: #0e7490;
+  border-color: #0e7490;
+  transform: translateY(-1px);
+}
+
+.hex-button-active {
+  background: #155e75;
+  color: #ffffff;
+  border: 1px solid #155e75;
+  box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.3);
+  transition: all 0.3s ease;
+}
+
+.hex-button-active:hover {
+  background: #164e63;
+  border-color: #164e63;
+  box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.5);
+  transform: translateY(-1px);
+}
+
+.upload-button {
+  background: #3b82f6;
+  color: #ffffff;
+  border: 1px solid #3b82f6;
+  transition: all 0.3s ease;
+}
+
+.upload-button:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.status-indicators {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.led-on {
+  background-color: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5), 0 0 12px rgba(251, 191, 36, 0.3);
+  transition: none;
+}
+
+/* Large LED Colors - More realistic */
+.led-indicator-large-red {
+  background-color: #ff4444;
+  border-color: #330a0a;
+  box-shadow: 0 10px 15px -3px rgba(255, 68, 68, 0.5), 0 0 20px rgba(255, 68, 68, 0.3);
+}
+
+.led-indicator-large-red.led-indicator-large-off {
+  background-color: #442222;
+  border-color: #330a0a;
+}
+
+.led-indicator-large-green {
+  background-color: #44ff44;
+  border-color: #082208;
+  box-shadow: 0 10px 15px -3px rgba(68, 255, 68, 0.5), 0 0 20px rgba(68, 255, 68, 0.3);
+}
+
+.led-indicator-large-green.led-indicator-large-off {
+  background-color: #224422;
+  border-color: #082208;
+}
+
+.led-indicator-large-blue {
+  background-color: #0088ff;
+  border-color: #002244;
+  box-shadow: 0 10px 15px -3px rgba(0, 136, 255, 0.5), 0 0 20px rgba(0, 136, 255, 0.3);
+}
+
+.led-indicator-large-blue.led-indicator-large-off {
+  background-color: #224477;
+  border-color: #002244;
+}
+
+.led-indicator-large-yellow {
+  background-color: #ffff44;
+  border-color: #222208;
+  box-shadow: 0 10px 15px -3px rgba(255, 255, 68, 0.5), 0 0 20px rgba(255, 255, 68, 0.3);
+}
+
+.led-indicator-large-yellow.led-indicator-large-off {
+  background-color: #444422;
+  border-color: #222208;
+}
+
+.led-fade-out {
+  animation: ledIndicatorFadeOut 200ms ease-in forwards;
+}
+
+.led-off {
+  background-color: var(--vscode-input-background);
+}
+
+.led-label {
+  font-size: 0.875rem;
+  color: var(--vscode-foreground);
+}
+
+.state-on {
+  color: #fbbf24;
+}
+
+.state-off {
+  color: var(--vscode-descriptionForeground);
+}
+
+.frequency-display {
+  font-size: 0.875rem;
+  color: var(--vscode-foreground);
+}
+
+.frequency-value {
+  color: var(--vscode-textLink-foreground);
+}
+
+.examples-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.examples-label {
+  font-size: 0.875rem;
+  color: var(--panel-text-color);
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.example-select {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 200px;
+  outline: none;
+}
+
+.example-select:hover {
+  border-color: var(--vscode-inputOption-hoverBackground);
+}
+
+.example-select:focus {
+  border-color: var(--vscode-focusBorder);
+  box-shadow: 0 0 0 1px var(--vscode-focusBorder);
+}
+
+.example-select option {
+  background-color: var(--vscode-dropdown-background);
+  color: var(--vscode-dropdown-foreground);
+  padding: 0.5rem;
+}
+
+.hex-editor {
+  background-color: var(--vscode-editor-background);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--vscode-panel-border);
+}
+
+.hex-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.hex-editor-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--vscode-foreground);
+  margin: 0;
+}
+
+.hex-editor-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.hex-apply-button {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.hex-apply-button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.hex-close-button {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.hex-close-button:hover {
+  background-color: var(--vscode-list-hoverBackground);
+}
+
+.hex-textarea {
+  width: 100%;
+  height: 8rem;
+  font-size: 0.75rem;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  resize: none;
+  outline: none;
+}
+
+.hex-textarea:focus {
+  border-color: var(--vscode-focusBorder);
+}
+
+.hex-tip {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--vscode-descriptionForeground);
+}
+
+/* Serial Monitor */
+.serial-monitor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.serial-monitor.compact {
+  font-size: 0.75rem;
+}
+
+.serial-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: var(--panel-background);
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.serial-title-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.serial-status-indicator {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #10b981;
+  border-radius: 50%;
+}
+
+.serial-title {
+  font-weight: 500;
+  color: var(--panel-title-color);
+  margin: 0;
+}
+
+.serial-monitor.compact .serial-title {
+  font-size: 0.75rem;
+}
+
+.serial-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.serial-line-count {
+  font-size: 0.75rem;
+  color: var(--panel-text-color);
+  opacity: 0.7;
+}
+
+.serial-clear-button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background-color: var(--input-background);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.serial-clear-button:hover {
+  background-color: var(--button-hover);
+  color: var(--button-text);
+}
+
+.serial-minimize-button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background-color: var(--button-background);
+  color: var(--button-text);
+  border: 1px solid var(--button-background);
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  min-width: 24px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.serial-minimize-button:hover {
+  background-color: var(--button-hover);
+}
+
+.serial-minimized {
+  padding: 0.5rem 0.75rem;
+  background-color: var(--component-hover);
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 40px;
+}
+
+.serial-minimized-info {
+  font-size: 0.75rem;
+  color: var(--panel-text-color);
+  opacity: 0.7;
+}
+
+.serial-output {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+  background-color: var(--grid-background);
+  color: var(--panel-text-color);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+}
+
+.serial-monitor.compact .serial-output {
+  font-size: 0.75rem;
+}
+
+.serial-empty {
+  color: var(--panel-text-color);
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.serial-line {
+  margin-bottom: 0.25rem;
+}
+
+.serial-line-number {
+  color: var(--panel-text-color);
+  opacity: 0.5;
+  margin-right: 0.5rem;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.serial-line-content {
+  color: var(--panel-text-color);
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.serial-footer {
+  padding: 0.5rem 0.75rem;
+  background-color: var(--panel-background);
+  border-top: 1px solid var(--panel-border);
+  font-size: 0.75rem;
+  color: var(--panel-text-color);
+  opacity: 0.7;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.serial-footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Estilos para o simulador AVR8 */
+.avr8-simulator {
+  padding: 16px;
+  background: var(--vscode-editor-background);
+  border-top: 1px solid var(--vscode-panel-border);
+}
+
+/* Painel de boas-vindas do simulador */
+.simulator-welcome-panel {
+  text-align: center;
+  background-color: var(--panel-background);
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--panel-border);
+}
+
+.simulator-welcome-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--panel-text-color);
+  margin-bottom: 0.5rem;
+}
+
+.simulator-welcome-subtitle {
+  color: var(--panel-text-secondary);
+  margin-bottom: 1rem;
+}
+
+.simulator-welcome-instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--panel-text-secondary);
+}
+
+/* Painel do LED */
+.led-panel {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: var(--panel-background);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--panel-border);
+}
+
+.led-panel-title {
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: var(--panel-text-color);
+}
+
+/* Modal de configuração de pinos */
+.pin-config-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.pin-config-modal {
+  background-color: var(--panel-background);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 28rem;
+  width: 100%;
+  margin: 0 1rem;
+  border: 1px solid var(--panel-border);
+}
+
+.pin-config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.pin-config-title {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: var(--panel-text-color);
+}
+
+.pin-config-close {
+  color: var(--panel-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-size: 1.25rem;
+  padding: 0.25rem;
+}
+
+.pin-config-close:hover {
+  color: var(--panel-text-color);
+}
+
+.pin-config-content {
+  margin-bottom: 1rem;
+}
+
+.pin-config-component-info {
+  font-size: 0.875rem;
+  color: var(--panel-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.pin-config-component-name {
+  font-weight: 500;
+  color: var(--panel-text-color);
+}
+
+.pin-config-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--panel-text-color);
+  margin-bottom: 0.5rem;
+}
+
+.pin-config-select {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--input-background);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.pin-config-select:focus {
+  border-color: var(--button-background);
+  box-shadow: 0 0 0 2px rgba(14, 99, 156, 0.2);
+}
+
+.pin-config-select option {
+  background-color: var(--input-background);
+  color: var(--input-text);
+}
+
+.pin-config-select optgroup {
+  background-color: var(--input-background);
+  color: var(--input-text);
+  font-weight: 600;
+}
+
+.pin-config-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.pin-config-button {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.875rem;
+}
+
+.pin-config-button-cancel {
+  background-color: var(--input-background);
+  color: var(--panel-text-color);
+  border: 1px solid var(--input-border);
+}
+
+.pin-config-button-cancel:hover {
+  background-color: var(--component-hover);
+}
+
+.pin-config-button-confirm {
+  background-color: var(--button-background);
+  color: var(--button-text);
+}
+
+.pin-config-button-confirm:hover {
+  background-color: var(--button-hover);
+}
+
+/* Botão de fiação */
+.wiring-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--input-border);
+  cursor: pointer;
+}
+
+.wiring-button-active {
+  background-color: var(--button-background);
+  color: var(--button-text);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.wiring-button-inactive {
+  background-color: var(--panel-background);
+  color: var(--panel-text-color);
+}
+
+.wiring-button-inactive:hover {
+  background-color: var(--component-hover);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Painel de informações do componente */
+.component-info-panel {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--panel-background);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--panel-border);
+  max-width: 20rem;
+  z-index: 10;
+}
+
+.component-info-title {
+  font-weight: bold;
+  color: var(--panel-text-color);
+  font-size: 1.125rem;
+}
+
+.component-info-close {
+  color: var(--panel-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-size: 1.25rem;
+  padding: 0.25rem;
+}
+
+.component-info-close:hover {
+  color: var(--panel-text-color);
+}
+
+.component-info-details {
+  font-size: 0.875rem;
+  color: var(--panel-text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.component-info-tip {
+  font-size: 0.75rem;
+  color: var(--panel-text-secondary);
+}
+
+/* Indicador LED grande */
+.led-indicator-large {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 2px solid;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.led-indicator-large-on {
+  background-color: #ff4444;
+  border-color: #330a0a;
+  box-shadow: 0 10px 15px -3px rgba(255, 68, 68, 0.5), 0 0 20px rgba(255, 68, 68, 0.3);
+  transition: none;
+}
+
+.led-indicator-large-off {
+  background-color: #442222;
+  border-color: #330a0a;
+  transition: none;
+}
+
+.led-indicator-large-fade-out {
+  animation: ledFadeOut 200ms ease-in forwards;
+}
+
+
+
+.led-indicator-inner {
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: white;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+.led-status-text {
+  font-weight: 500;
+}
+
+.led-status-on {
+  color: #dc2626;
+}
+
+.led-status-off {
+  color: var(--panel-text-color);
+  opacity: 0.8;
+}
+
+.led-pin-label {
+  font-size: 0.75rem;
+  color: var(--panel-text-color);
+  opacity: 0.8;
+}
+
+/* Bullets das instruções de fiação */
+.wiring-instruction-bullet {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: white;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+@keyframes ledFadeOut {
+  0% {
+    background-color: #ff4444;
+    border-color: #330a0a;
+    box-shadow: 0 10px 15px -3px rgba(255, 68, 68, 0.5), 0 0 20px rgba(255, 68, 68, 0.3);
+  }
+  100% {
+    background-color: #442222;
+    border-color: #330a0a;
+    box-shadow: none;
+  }
+}
+
+@keyframes ledIndicatorFadeOut {
+  0% {
+    background-color: #fbbf24;
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.5), 0 0 12px rgba(251, 191, 36, 0.3);
+  }
+  100% {
+    background-color: var(--panel-border);
+    box-shadow: none;
+  }
+}
+
+/* Simplified fade-out animations for each color - 25ms direct transition */
+@keyframes ledRedFadeOut {
+  0% {
+    background-color: #ff4444;
+    box-shadow: 0 0 8px #ff4444, 0 0 15px #ff4444;
+  }
+  100% {
+    background-color: #442222;
+    box-shadow: none;
+  }
+}
+
+@keyframes ledGreenFadeOut {
+  0% {
+    background-color: #44ff44;
+    box-shadow: 0 0 8px #44ff44, 0 0 15px #44ff44;
+  }
+  100% {
+    background-color: #224422;
+    box-shadow: none;
+  }
+}
+
+@keyframes ledBlueFadeOut {
+  0% {
+    background-color: #0088ff;
+    box-shadow: 0 0 8px #0088ff, 0 0 15px #0088ff;
+  }
+  100% {
+    background-color: #224477;
+    box-shadow: none;
+  }
+}
+
+@keyframes ledYellowFadeOut {
+  0% {
+    background-color: #ffff44;
+    box-shadow: 0 0 8px #ffff44, 0 0 15px #ffff44;
+  }
+  100% {
+    background-color: #444422;
+    box-shadow: none;
+  }
+}
+
+@keyframes selectionPulse {
+  0%, 100% {
+    border-color: #007acc;
+    transform: scale(1);
+  }
+  50% {
+    border-color: #0099ff;
+    transform: scale(1.02);
+  }
+}
+
+/* Indicadores de modo e pino */
+.mode-indicator {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.pin-indicator {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.components-counter {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+/* Botão de limpar fios */
+.clear-wires-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.clear-wires-button:hover {
+  background-color: #b91c1c;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Informações de exibição de componentes */
+.components-display-info {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background-color: var(--success-background, #dcfce7);
+  color: var(--success-text, #166534);
+  border: 1px solid var(--success-border, #bbf7d0);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Divisor de informações do componente */
+.component-info-divider {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--panel-border);
+}
+
+/* Botão de configuração do componente */
+.component-config-button {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.component-config-button:hover {
+  background-color: #2563eb;
+}
+
+/* Instruções de fiação */
+.wiring-instructions {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background: linear-gradient(to right, #2563eb, #1d4ed8);
+  color: white;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 24rem;
+}
+
+.simulator-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+
+
+.control-button.play {
+  background: #28a745;
+  border-color: #28a745;
+}
+
+.control-button.stop {
+  background: #dc3545;
+  border-color: #dc3545;
+}
+
+.control-button.reset {
+  background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.speed-control label {
+  font-size: 14px;
+  color: var(--vscode-foreground);
+}
+
+.speed-control select {
+  padding: 4px 8px;
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  background: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  font-size: 14px;
+}
+
+.serial-monitor h3 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+}
+
+.serial-monitor pre {
+  margin: 0;
+  padding: 8px;
+  background: var(--vscode-terminal-background);
+  color: var(--vscode-terminal-foreground);
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Diagram Loader */
+.diagram-loader {
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.diagram-drop-zone {
+  border: 2px dashed var(--vscode-input-border);
+  border-radius: 8px;
+  padding: 32px;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.diagram-drop-zone:hover,
+.diagram-drop-zone.drag-over {
+  border-color: var(--vscode-button-background);
+  background: rgba(0, 122, 204, 0.1);
+}
+
+.diagram-info {
+  background: var(--vscode-editor-background);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.diagram-info h4 {
+  margin: 0 0 8px 0;
+  color: var(--vscode-foreground);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.diagram-info p {
+  margin: 4px 0;
+  color: var(--vscode-descriptionForeground);
+  font-size: 12px;
+}
+
+.diagram-error {
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  color: #f44336;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+/* Help Popup Styles */
+.help-popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.help-popup-container {
+  background-color: var(--vscode-panel-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: helpPopupSlideIn 0.3s ease-out;
+}
+
+@keyframes helpPopupSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.help-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  background-color: var(--vscode-sideBar-background);
+}
+
+.help-popup-title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.help-popup-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--vscode-panelTitle-activeForeground);
+  margin: 0;
+}
+
+.help-popup-version {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.help-popup-close-btn {
+  background: none;
+  border: none;
+  color: var(--vscode-foreground);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.help-popup-close-btn:hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+  opacity: 1;
+}
+
+.help-popup-tabs {
+  display: flex;
+  background-color: var(--vscode-tab-inactiveBackground);
+  border-bottom: 1px solid var(--vscode-tab-border);
+  overflow-x: auto;
+  gap: 2px;
+  padding: 4px;
+}
+
+.help-tab-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--vscode-tab-inactiveForeground);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  opacity: 0.8;
+  font-size: 0.875rem;
+  flex: 1;
+  justify-content: center;
+  border-radius: 6px;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  outline: none;
+}
+
+.help-tab-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(37, 37, 38, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.help-tab-button:hover::before {
+  left: 100%;
+}
+
+.help-tab-button:hover {
+  color: var(--vscode-tab-activeForeground);
+  opacity: 1;
+  transform: translateY(-1px);
+  background-color: var(--vscode-tab-activeBackground);
+  box-shadow: 0 2px 8px rgba(37, 37, 38, 0.3), 0 0 15px rgba(37, 37, 38, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-bottom-color: var(--panel-background);
+}
+
+.help-tab-button.active {
+  background-color: var(--vscode-tab-activeBackground);
+  color: var(--vscode-tab-activeForeground);
+  border-bottom-color: var(--vscode-tab-activeBorder);
+  opacity: 1;
+  outline: none;
+}
+
+.help-tab-button:focus {
+  outline: none;
+}
+
+.help-tab-icon {
+  font-size: 1rem;
+}
+
+.help-tab-label {
+  font-weight: 500;
+}
+
+.help-popup-content {
+  padding: 24px;
+  height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.help-instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.instruction-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: var(--vscode-input-background);
+  border-radius: 6px;
+  border-left: 3px solid var(--vscode-button-background);
+}
+
+.instruction-number {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.instruction-text {
+  color: var(--vscode-foreground);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.help-shortcuts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: var(--vscode-input-background);
+  border-radius: 4px;
+}
+
+.shortcut-key {
+  background-color: var(--vscode-panel-border);
+  color: var(--vscode-foreground);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'TX-02-Data', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.shortcut-desc {
+  color: var(--vscode-foreground);
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.help-popup-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--vscode-panel-border);
+  background-color: var(--vscode-sideBar-background);
+  text-align: center;
+}
+
+.help-footer-text {
+  color: var(--vscode-descriptionForeground);
+  font-size: 0.875rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* Help Button in Header */
+.help-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--vscode-foreground);
+  opacity: 0.7;
+}
+
+.help-btn:hover {
+  background-color: var(--vscode-toolbar-hoverBackground);
+  opacity: 1;
+}

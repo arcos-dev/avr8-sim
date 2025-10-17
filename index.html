@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-t" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AVR8js Arduino Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'gray': {
+                50: '#FFFFFF',   // Light panel/textarea bg
+                100: '#F5F5F5',  // Light main bg & Dark main text
+                200: '#E7E7E7',  // Light borders / canvas bg
+                300: '#D1D1D1',  // Light subtle borders
+                400: '#999999',  // Medium-light gray
+                500: '#666666',  // Medium-dark gray
+                600: '#3E3E42',  // Dark borders
+                700: '#2D2D30',  // Dark UI hover/select
+                800: '#252526',  // Dark UI panel bg
+                900: '#1E1E1E',  // Dark main bg / Light main text
+                950: '#000000',  // Dark canvas bg
+              },
+              'blue': {
+                400: '#2B90D9',  // VS Blue for dark theme text accent
+                500: '#007ACC',  // Main VS Blue for focus rings
+                600: '#007ACC',  // Main VS Blue for light theme text accent
+              },
+              'green': {
+                600: '#388E3C', // VS Green for Run button
+                700: '#2E7D32', // Hover state
+              },
+              'red': {
+                600: '#D32F2F', // VS Red for Stop button
+                700: '#C62828', // Hover state
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "source-map-js": "https://aistudiocdn.com/source-map-js@^1.2.1",
+    "avr8js": "https://aistudiocdn.com/avr8js@^0.20.1"
+  }
+}
+</script>
+    <script src="https://unpkg.com/wokwi-elements@1.0.0/dist/wokwi-elements.bundle.js"></script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-gray-100 dark:bg-gray-900">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
