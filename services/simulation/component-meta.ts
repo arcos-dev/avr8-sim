@@ -148,10 +148,10 @@ const MEGA_META: ComponentMeta = {
 };
 
 export const COMPONENT_META: Record<string, ComponentMeta> = {
-  'wokwi-arduino-uno': UNO_META,
-  'wokwi-arduino-nano': NANO_META,
-  'wokwi-arduino-mega': MEGA_META,
-  'wokwi-led': {
+  'arduino-uno': UNO_META,
+  'arduino-nano': NANO_META,
+  'arduino-mega': MEGA_META,
+  'led': {
     width: 40,
     height: 40,
     pins: [
@@ -159,7 +159,7 @@ export const COMPONENT_META: Record<string, ComponentMeta> = {
       { name: 'C', x: 25, y: 40, description: 'Cathode (-)' }
     ],
   },
-  'wokwi-pushbutton': {
+  'pushbutton': {
     width: 40,
     height: 40,
     pins: [
@@ -169,7 +169,7 @@ export const COMPONENT_META: Record<string, ComponentMeta> = {
       { name: '2B', x: 30, y: 40, description: 'Terminal 2B' },
     ],
   },
-  'wokwi-resistor': {
+  'resistor': {
     width: 80,
     height: 42,
     pins: [
@@ -177,7 +177,7 @@ export const COMPONENT_META: Record<string, ComponentMeta> = {
       { name: '2', x: 80, y: 15, description: 'Terminal 2' },
     ],
   },
-  'wokwi-potentiometer': {
+  'potentiometer': {
     width: 50,
     height: 50,
     pins: [
@@ -186,7 +186,7 @@ export const COMPONENT_META: Record<string, ComponentMeta> = {
       { name: 'VCC', x: 45, y: 50, description: 'Voltage' },
     ],
   },
-  'wokwi-dht22': {
+  'dht22': {
     width: 50,
     height: 55,
     pins: [
@@ -196,7 +196,7 @@ export const COMPONENT_META: Record<string, ComponentMeta> = {
       { name: 'GND', x: 44, y: 55 },
     ],
   },
-  'wokwi-lcd1602': {
+  'lcd1602': {
     width: 160,
     height: 60,
     pins: [
@@ -206,7 +206,7 @@ export const COMPONENT_META: Record<string, ComponentMeta> = {
       { name: 'D7', x: 120, y: 0 }, { name: 'A', x: 130, y: 0 }, { name: 'K', x: 140, y: 0 },
     ],
   },
-  'wokwi-ssd1306': {
+  'ssd1306': {
     width: 70,
     height: 40,
     pins: [
@@ -214,15 +214,15 @@ export const COMPONENT_META: Record<string, ComponentMeta> = {
       { name: 'SCL', x: 40, y: 0 }, { name: 'SDA', x: 55, y: 0 },
     ],
   },
-  'wokwi-servo': { width: 60, height: 60, pins: [] },
-  'wokwi-membrane-keypad': { width: 80, height: 90, pins: [] },
-  'wokwi-rgb-led': { width: 40, height: 40, pins: [] },
-  'wokwi-seven-segment': { width: 40, height: 60, pins: [] },
-  'wokwi-neopixel': { width: 25, height: 25, pins: [] },
-  'wokwi-neopixel-ring': { width: 80, height: 80, pins: [] },
-  'wokwi-neopixel-matrix': { width: 100, height: 100, pins: [] },
-  'wokwi-pir-motion-sensor': { width: 50, height: 60, pins: [] },
-  'wokwi-ntc-temperature-sensor': { width: 30, height: 50, pins: [] },
+  'servo': { width: 60, height: 60, pins: [] },
+  'membrane-keypad': { width: 80, height: 90, pins: [] },
+  'rgb-led': { width: 40, height: 40, pins: [] },
+  'seven-segment': { width: 40, height: 60, pins: [] },
+  'neopixel': { width: 25, height: 25, pins: [] },
+  'neopixel-ring': { width: 80, height: 80, pins: [] },
+  'neopixel-matrix': { width: 100, height: 100, pins: [] },
+  'pir-motion-sensor': { width: 50, height: 60, pins: [] },
+  'ntc-temperature-sensor': { width: 30, height: 50, pins: [] },
 };
 
 export function getComponentMeta(type: string): ComponentMeta {

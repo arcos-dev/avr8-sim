@@ -32,10 +32,10 @@ export const Header: React.FC<HeaderProps> = ({
   compiling,
 }) => {
   return (
-    <header className="flex flex-wrap items-center justify-between gap-3 px-3 py-2 md:px-6 md:py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <header className="flex flex-wrap items-center justify-between gap-3 px-3 py-2 md:px-6 md:py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm select-none">
       <div className="flex flex-wrap items-center gap-3 md:gap-4">
         <h1 className="text-lg md:text-2xl font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">
-          AVR8js Simulator
+          ProtoSim
         </h1>
         <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-900 rounded-md px-2 py-1">
           <span className="text-xs uppercase tracking-wide text-blue-500 dark:text-blue-300">Projeto</span>

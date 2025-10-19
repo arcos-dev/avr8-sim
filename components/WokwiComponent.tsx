@@ -34,27 +34,27 @@ interface WokwiComponentProps {
 }
 
 const componentMap: Record<string, React.ElementType> = {
-  'wokwi-led': Led,
-  'wokwi-pushbutton': PushButton,
-  'wokwi-resistor': Resistor,
-  'wokwi-potentiometer': Potentiometer,
-  'wokwi-dht22': Dht22,
-  'wokwi-lcd1602': Lcd1602,
-  'wokwi-ssd1306': Ssd1306,
-  'wokwi-servo': Servo,
-  'wokwi-membrane-keypad': MembraneKeypad,
-  'wokwi-rgb-led': RgbLed,
-  'wokwi-seven-segment': SevenSegment,
-  'wokwi-neopixel': NeoPixel,
-  'wokwi-neopixel-ring': NeoPixelRing,
-  'wokwi-neopixel-matrix': NeoPixelMatrix,
-  'wokwi-pir-motion-sensor': PirMotionSensor,
-  'wokwi-ntc-temperature-sensor': NtcTempSensor,
+  'led': Led,
+  'pushbutton': PushButton,
+  'resistor': Resistor,
+  'potentiometer': Potentiometer,
+  'dht22': Dht22,
+  'lcd1602': Lcd1602,
+  'ssd1306': Ssd1306,
+  'servo': Servo,
+  'membrane-keypad': MembraneKeypad,
+  'rgb-led': RgbLed,
+  'seven-segment': SevenSegment,
+  'neopixel': NeoPixel,
+  'neopixel-ring': NeoPixelRing,
+  'neopixel-matrix': NeoPixelMatrix,
+  'pir-motion-sensor': PirMotionSensor,
+  'ntc-temperature-sensor': NtcTempSensor,
 };
 
 
-export const WokwiComponent: React.FC<WokwiComponentProps> = ({ 
-    component, 
+export const WokwiComponent: React.FC<WokwiComponentProps> = ({
+    component,
     isSelected,
     onMouseDown,
     onPinsLoaded,
@@ -62,14 +62,14 @@ export const WokwiComponent: React.FC<WokwiComponentProps> = ({
     onPinMouseDown,
     onPinMouseUp,
 }) => {
-  const componentRef = useRef<HTMLElement & {wokwiComponentType?: string}>(null);
+  const componentRef = useRef<HTMLElement & {componentType?: string}>(null);
   const { width, height, pins } = getComponentMeta(component.type);
 
   useLayoutEffect(() => {
     onPinsLoaded(component.id, pins);
-    
+
     if (componentRef.current) {
-        componentRef.current.wokwiComponentType = component.type;
+        componentRef.current.componentType = component.type;
         registerRef(component.id, componentRef.current);
     }
     return () => registerRef(component.id, null);
@@ -125,7 +125,7 @@ export const WokwiComponent: React.FC<WokwiComponentProps> = ({
             </div>
         </div>
       ))}
-      
+
       {isSelected && (
         <div className="absolute inset-0 outline outline-2 outline-blue-500 rounded-sm pointer-events-none" />
       )}

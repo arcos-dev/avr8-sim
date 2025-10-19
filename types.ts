@@ -58,6 +58,8 @@ export interface WireRuntimeState {
 
 export interface SimulationSettings {
   simulateElectronFlow: boolean;
+  simulationSpeedMode?: 'realistic' | 'maximum'; // 'realistic' = 100% hardware speed, 'maximum' = max possible speed
+  renderingFPS?: 30 | 60 | 120 | 'unlimited'; // Cap rendering FPS to save CPU, or 'unlimited' for max FPS
 }
 
 export interface PinConnectionTarget {

@@ -6,7 +6,7 @@ export interface ResistorProps {
 
 export const Resistor = React.forwardRef<HTMLDivElement, ResistorProps>(({ value = '1000' }, ref) => {
   return (
-    <div ref={ref} className="flex flex-col items-center justify-center h-full">
+    <div ref={ref} className="flex flex-col items-center justify-center h-full select-none" style={{ userSelect: 'none' }}>
       <svg width="80" height="30" viewBox="0 0 80 30" xmlns="http://www.w3.org/2000/svg">
         {/* Wires */}
         <line x1="0" y1="15" x2="15" y2="15" stroke="#999" strokeWidth="2" />

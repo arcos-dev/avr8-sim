@@ -84,11 +84,11 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ component, pin
 
   const renderInputFor = (key: string, value: any) => {
     const inputClasses = "w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md p-1.5 text-sm focus:ring-blue-500 focus:border-blue-500";
-    
+
     if (key === 'color') {
         const safeValue = normalizeColorValue(value);
         return (
-            <input 
+            <input
                 type="color"
                 name={key}
                 value={safeValue}
@@ -120,17 +120,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ component, pin
         />
     );
   };
-  
+
   const genericProps = Object.entries(component).filter(([key]) => !IGNORED_PROPS.includes(key));
 
   return (
-    <div className="p-4 bg-gray-100 dark:bg-gray-800 h-full text-sm">
+    <div className="p-4 bg-gray-100 dark:bg-gray-800 h-full text-sm select-none">
       <div className="space-y-4">
         <div>
-            <h3 className="font-bold text-base mb-2 capitalize">{component.type.replace('wokwi-', '').replace('-', ' ')}</h3>
+            <h3 className="font-bold text-base mb-2 capitalize">{component.type.replace('-', ' ')}</h3>
             <p className="text-xs text-gray-500 dark:text-gray-400">ID: {component.id}</p>
         </div>
-        
+
         {genericProps.length > 0 && (
             <div>
                  <h4 className="font-semibold mb-2 text-gray-800 dark:text-gray-200">Properties</h4>

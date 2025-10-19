@@ -1,0 +1,70 @@
+/* Splitter rounded corner styles - Microsoft Edge style */
+
+/* Vertical splitter with rounded ends */
+.splitter-vertical {
+  border-radius: 2px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* Commented out to avoid visual artifacts at the ends
+.splitter-vertical::before,
+.splitter-vertical::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  width: 5px;
+  height: 20px;
+  background: inherit;
+  border-radius: 2px;
+  transition: inherit;
+}
+
+.splitter-vertical::before {
+  top: -10px;
+}
+
+.splitter-vertical::after {
+  bottom: -10px;
+}
+*/
+
+/* Horizontal splitter with rounded ends */
+.splitter-horizontal {
+  border-radius: 2px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* Commented out to avoid visual artifacts at the ends
+.splitter-horizontal::before,
+.splitter-horizontal::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  height: 5px;
+  width: 20px;
+  background: inherit;
+  border-radius: 2px;
+  transition: inherit;
+}
+
+.splitter-horizontal::before {
+  left: -10px;
+}
+
+.splitter-horizontal::after {
+  right: -10px;
+}
+*/
+
+/* Container for smooth curved effect */
+.panel-container {
+  position: relative;
+  border-radius: 0;
+}
+
+.panel-with-rounded-splitter {
+  overflow: hidden;
+  border-radius: 4px;
+}

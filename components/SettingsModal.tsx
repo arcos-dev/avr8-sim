@@ -21,12 +21,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const [url, setUrl] = useState(currentUrl);
   const [simulateElectronFlow, setSimulateElectronFlow] = useState(simulationSettings.simulateElectronFlow);
+  const [simulationSpeedMode, setSimulationSpeedMode] = useState(simulationSettings.simulationSpeedMode || 'realistic');
+  const [renderingFPS, setRenderingFPS] = useState<30 | 60 | 120 | 'unlimited'>((simulationSettings.renderingFPS || 'unlimited') as 30 | 60 | 120 | 'unlimited');
 
   const handleSave = () => {
     onSave({
       compilerUrl: url,
       simulation: {
         simulateElectronFlow,
+        simulationSpeedMode,
+        renderingFPS,
       },
     });
     onClose();
@@ -35,19 +39,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const handleReset = () => {
     setUrl(defaultUrl);
     setSimulateElectronFlow(defaultSimulationSettings.simulateElectronFlow);
+    setSimulationSpeedMode(defaultSimulationSettings.simulationSpeedMode || 'realistic');
+    setRenderingFPS((defaultSimulationSettings.renderingFPS || 'unlimited') as 30 | 60 | 120 | 'unlimited');
   };
 
   return (
-    <div 
+    <div
         className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50"
         onClick={onClose}
     >
-      <div 
+      <div
         className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">Compiler Settings</h2>
-        
+
         <div className="mb-4">
           <label htmlFor="compiler-url" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Build Server URL
@@ -87,6 +93,47 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {simulateElectronFlow ? 'On' : 'Off'}
               </span>
             </label>
+          </div>
+
+          <div className="mt-4">
+            <label htmlFor="speed-mode" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+              Simulation Speed
+            </label>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+              Choose between accurate hardware emulation (100% speed) or maximum performance.
+            </p>
+            <select
+              id="speed-mode"
+              value={simulationSpeedMode}
+              onChange={(e) => setSimulationSpeedMode(e.target.value as 'realistic' | 'maximum')}
+              className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="realistic">Realistic (100% Hardware Speed)</option>
+              <option value="maximum">Maximum (Fastest Possible)</option>
+            </select>
+          </div>
+
+          <div className="mt-4">
+            <label htmlFor="rendering-fps" className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+              Rendering FPS Cap
+            </label>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+              Limit the rendering frame rate to reduce CPU usage (30/60/120 FPS).
+            </p>
+            <select
+              id="rendering-fps"
+              value={renderingFPS}
+              onChange={(e) => {
+                const val = e.target.value;
+                setRenderingFPS(val === 'unlimited' ? 'unlimited' : Number(val) as 30 | 60 | 120);
+              }}
+              className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="unlimited">Unlimited (Maximum)</option>
+              <option value={120}>120 FPS (Muito Rápido)</option>
+              <option value={60}>60 FPS (Balanceado)</option>
+              <option value={30}>30 FPS (Baixo CPU)</option>
+            </select>
           </div>
         </div>
 

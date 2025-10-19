@@ -1,0 +1,106 @@
+/* Scrollbar styles for light and dark themes */
+
+/* Auto-detect theme scrollbar - WebKit browsers (Chrome, Safari, Edge) */
+.auto-scrollbar::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.auto-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.auto-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: background 0.2s ease;
+}
+
+.auto-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #999999;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Dark theme WebKit scrollbars */
+.dark .auto-scrollbar::-webkit-scrollbar-thumb {
+  background: #3e3e42;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark .auto-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555555;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Firefox scrollbar (all versions) */
+.auto-scrollbar {
+  scrollbar-width: auto;
+  scrollbar-color: #d1d1d1 transparent;
+}
+
+.dark .auto-scrollbar {
+  scrollbar-color: #3e3e42 transparent;
+}
+
+/* Light Theme Scrollbars (explicit) */
+.light-scrollbar::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.light-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.light-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: background 0.2s ease;
+}
+
+.light-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #999999;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.light-scrollbar {
+  scrollbar-width: auto;
+  scrollbar-color: #d1d1d1 transparent;
+}
+
+/* Dark Theme Scrollbars (explicit) */
+.dark-scrollbar::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: #3e3e42;
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  transition: background 0.2s ease;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555555;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark-scrollbar {
+  scrollbar-width: auto;
+  scrollbar-color: #3e3e42 transparent;
+}

@@ -29,10 +29,10 @@ export const Splitter: React.FC<SplitterProps> = ({ onResize, orientation, class
     document.body.style.userSelect = 'none';
   };
 
-  const baseClasses = "bg-gray-300 dark:bg-gray-700 hover:bg-blue-500 dark:hover:bg-blue-500 transition-colors shrink-0";
+  const baseClasses = "bg-gradient-to-r dark:bg-gradient-to-r from-gray-300 to-gray-300 dark:from-gray-700 dark:to-gray-700 hover:from-blue-500 hover:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-500 transition-colors shrink-0 relative";
   const orientationClasses = orientation === 'vertical'
-    ? "w-1.5 cursor-col-resize"
-    : "h-1.5 cursor-row-resize";
+    ? "w-1 cursor-col-resize rounded-full splitter-vertical"
+    : "h-1 cursor-row-resize splitter-horizontal";
 
   return (
     <div

@@ -25,7 +25,7 @@ export const Lcd1602 = React.forwardRef<HTMLDivElement>((props, ref) => (
     <svg width="160" height="60" viewBox="0 0 160 60">
       <rect width="160" height="60" rx="4" fill="#1E40AF" />
       <rect x="10" y="10" width="140" height="40" fill="#60A5FA" />
-      <text x="15" y="35" fontFamily="monospace" fill="#1E3A8A">Hello, AVR8js!</text>
+      <text x="15" y="35" fontFamily="monospace" fill="#1E3A8A">Hello, ProtoSim!</text>
     </svg>
   </div>
 ));

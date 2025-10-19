@@ -38,9 +38,15 @@ interface SimulationCanvasProps {
   hex: string;
   selectedComponentId: string | null;
   onSelectComponent: (id: string | null) => void;
+  onCanvasBackgroundClick?: () => void;
   onSerialOutput: (char: string) => void;
   setRunner: (runner: AVRRunner | null) => void;
   simulateElectronFlow: boolean;
+  simulationSpeedMode?: 'realistic' | 'maximum';
+  simulationSettings?: {
+    renderingFPS?: 30 | 60 | 120 | 'unlimited';
+    [key: string]: any;
+  };
 }
 
 const BOARD_ID = 'board';
@@ -148,24 +154,27 @@ function computeWireMagnitude(link: BoardWireLink, logical: WireLogicalState): n
   return base;
 }
 
-export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ 
-  components, 
+export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
+  components,
   wires,
-  onUpdateComponent, 
-  onAddComponent, 
+  onUpdateComponent,
+  onAddComponent,
   onDeleteComponent,
   onAddWire,
   onUpdateWire,
   onDeleteWire,
   onPinsLoaded,
-  board, 
-  running, 
+  board,
+  running,
   hex,
   selectedComponentId,
   onSelectComponent,
+  onCanvasBackgroundClick,
   onSerialOutput,
   setRunner,
-  simulateElectronFlow
+  simulateElectronFlow,
+  simulationSpeedMode = 'realistic',
+  simulationSettings
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -173,15 +182,24 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const [isPanning, setIsPanning] = useState(false);
   const [draggingComponent, setDraggingComponent] = useState<{ id: string; offsetX: number; offsetY: number } | null>(null);
   const runnerRef = useRef<AVRRunner | null>(null);
-  const componentRefs = useRef<{[id: string]: HTMLElement & {wokwiComponentType?: string}}>({});
+  const dragUpdateFrameRef = useRef<number | null>(null);
+  const pendingDragUpdateRef = useRef<{ id: string; x: number; y: number } | null>(null);
+  const componentRefs = useRef<{[id: string]: HTMLElement & {componentType?: string}}>({});
   const [simulationTime, setSimulationTime] = useState(0);
   const [simulationSpeed, setSimulationSpeed] = useState(0);
+  const [simulationFPS, setSimulationFPS] = useState(0);
+  const lastSpeedUpdateRef = useRef(0);
+  const frameCountRef = useRef(0);
+  const fpsUpdateTimeRef = useRef(performance.now());
+  const lastFrameTimeRef = useRef(performance.now());
+  const frameIntervalRef = useRef(1000 / 60); // Default 60 FPS
   const [mouseCoords, setMouseCoords] = useState({ x: 0, y: 0 });
   const { theme } = useTheme();
 
   const [wiringState, setWiringState] = useState<WiringState | null>(null);
   const [selectedWireId, setSelectedWireId] = useState<string | null>(null);
   const [wireStates, setWireStates] = useState<Record<string, WireRuntimeState>>({});
+  const [boardPosition, setBoardPosition] = useState({ x: BOARD_INITIAL_POS.x, y: BOARD_INITIAL_POS.y });
   const portListenerCleanupRef = useRef<(() => void)[]>([]);
 
   const updateTransform = useCallback(() => {
@@ -194,7 +212,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   useLayoutEffect(() => {
     updateTransform();
   }, [updateTransform]);
-  
+
   const handleResetView = useCallback(() => {
     transformRef.current = { x: 50, y: 50, scale: 1 };
     updateTransform();
@@ -204,14 +222,14 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const handleFitToView = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
-    
+
     const allElements = [
         ...components,
         { id: BOARD_ID, type: BOARD_ELEMENTS[board], ...BOARD_INITIAL_POS }
     ];
 
     if (allElements.length === 0) return handleResetView();
-    
+
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
 
     allElements.forEach(item => {
@@ -223,20 +241,20 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     });
 
     if (!isFinite(minX)) return handleResetView();
-    
+
     const bboxWidth = maxX - minX;
     const bboxHeight = maxY - minY;
-    
+
     if (bboxWidth <= 0 || bboxHeight <= 0) return handleResetView();
-    
+
     const PADDING = 60;
     const scaleX = (container.clientWidth - PADDING * 2) / bboxWidth;
     const scaleY = (container.clientHeight - PADDING * 2) / bboxHeight;
     const newScale = Math.min(scaleX, scaleY, 2);
-    
+
     const newX = -minX * newScale + (container.clientWidth - bboxWidth * newScale) / 2;
     const newY = -minY * newScale + (container.clientHeight - bboxHeight * newScale) / 2;
-    
+
     transformRef.current = { x: newX, y: newY, scale: Math.max(0.1, newScale) };
     updateTransform();
     setMouseCoords(prev => ({...prev}));
@@ -245,9 +263,9 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const allComponentData = useMemo(
     () => [
       ...components,
-      { id: BOARD_ID, type: BOARD_ELEMENTS[board], ...BOARD_INITIAL_POS },
+      { id: BOARD_ID, type: BOARD_ELEMENTS[board], x: boardPosition.x, y: boardPosition.y },
     ],
-    [components, board]
+    [components, board, boardPosition]
   );
 
   const componentDataMap = useMemo(
@@ -291,7 +309,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const handleZoom = useCallback((delta: number, centerX: number, centerY: number) => {
     const { x, y, scale } = transformRef.current;
     const newScale = Math.max(0.1, Math.min(5, scale * delta));
-    
+
     const newX = centerX - (centerX - x) * (newScale / scale);
     const newY = centerY - (centerY - y) * (newScale / scale);
 
@@ -348,15 +366,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
   const startSimulation = useCallback(() => {
     if (!hex) return;
-    
+
     portListenerCleanupRef.current.forEach(cleanup => cleanup());
     portListenerCleanupRef.current = [];
 
     const runner = new AVRRunner(hex);
+    runner.setSpeedMode(simulationSpeedMode as 'realistic' | 'maximum');
     runnerRef.current = runner;
     setRunner(runner);
-    const cpuPerf = new CPUPerformance(runner.cpu, runner.frequency);
-    
+    const cpuPerf = new CPUPerformance(runner.cpu, 16, runner); // 16 MHz, with runner for adaptive adjustment
+
     const boardElement = componentRefs.current[BOARD_ID] as HTMLElement & {led13?: boolean};
     const pinMapping = getPinMapping(board);
     if (!pinMapping) return;
@@ -410,7 +429,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         if (!connectionsByComponent[componentId]) {
             connectionsByComponent[componentId] = {};
         }
-        
+
         const arduinoPinNumber = resolveBoardPinNumber(arduinoPin, board);
 
         if (typeof arduinoPinNumber === 'number' && !Number.isNaN(arduinoPinNumber)) {
@@ -472,16 +491,43 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
     const frame = () => {
       if (!runnerRef.current) return;
-      runner.execute((cpu) => {
-        setSimulationTime(cpu.cycles / runner.frequency);
-        const speed = cpuPerf.update();
-        setSimulationSpeed(speed);
-      });
+
+      // Check if enough time has passed based on FPS cap
+      const now = performance.now();
+      const timeSinceLastFrame = now - lastFrameTimeRef.current;
+
+      // Only execute frame if enough time has passed
+      if (timeSinceLastFrame >= frameIntervalRef.current) {
+        lastFrameTimeRef.current = now;
+
+        runner.execute((cpu) => {
+          setSimulationTime(cpu.cycles / runner.frequency);
+
+          frameCountRef.current++;
+
+          // Update speed and FPS display every 100ms to reduce UI updates
+          const now = performance.now();
+          if (now - lastSpeedUpdateRef.current >= 100) {
+            const speed = cpuPerf.update();
+            setSimulationSpeed(speed);
+
+            // Calculate FPS
+            const elapsed = now - fpsUpdateTimeRef.current;
+            const fps = (frameCountRef.current / elapsed) * 1000;
+            setSimulationFPS(fps);
+
+            lastSpeedUpdateRef.current = now;
+            frameCountRef.current = 0;
+            fpsUpdateTimeRef.current = now;
+          }
+        });
+      }
+
       requestAnimationFrame(frame);
     };
     requestAnimationFrame(frame);
 
-  }, [hex, board, components, onSerialOutput, setRunner, wires, boardPinToLinks, applyBoardSignal]);
+  }, [hex, board, components, onSerialOutput, setRunner, wires, boardPinToLinks, applyBoardSignal, simulationSpeedMode]);
 
   const stopSimulation = useCallback(() => {
     if (runnerRef.current) {
@@ -510,7 +556,17 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     }
     return () => stopSimulation();
   }, [running, hex, startSimulation, stopSimulation]);
-  
+
+  useEffect(() => {
+    // Update frame interval when rendering FPS setting changes
+    const fps = simulationSettings?.renderingFPS;
+    if (fps === 'unlimited') {
+      frameIntervalRef.current = 0; // No throttling
+    } else {
+      frameIntervalRef.current = 1000 / (fps || 60);
+    }
+  }, [simulationSettings?.renderingFPS]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -546,6 +602,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     if (isCanvas) {
       setIsPanning(true);
       handleSelectComponent(null);
+      onCanvasBackgroundClick?.();
     }
     if (isCanvas && wiringState) {
         setWiringState(null);
@@ -569,16 +626,44 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     }
     if (draggingComponent) {
       const { id, offsetX, offsetY } = draggingComponent;
-      onUpdateComponent(id, { x: coords.x - offsetX, y: coords.y - offsetY });
+      const newX = coords.x - offsetX;
+      const newY = coords.y - offsetY;
+
+      // Store the pending update
+      pendingDragUpdateRef.current = { id, x: newX, y: newY };
+
+      // Schedule update using requestAnimationFrame to throttle updates
+      if (!dragUpdateFrameRef.current) {
+        dragUpdateFrameRef.current = requestAnimationFrame(() => {
+          if (pendingDragUpdateRef.current) {
+            const { id, x, y } = pendingDragUpdateRef.current;
+            onUpdateComponent(id, { x, y });
+            pendingDragUpdateRef.current = null;
+          }
+          dragUpdateFrameRef.current = null;
+        });
+      }
     }
   };
 
   const handleMouseUp = () => {
     setIsPanning(false);
+
+    // Cancel any pending drag update and apply final position
+    if (dragUpdateFrameRef.current) {
+      cancelAnimationFrame(dragUpdateFrameRef.current);
+      dragUpdateFrameRef.current = null;
+    }
+    if (pendingDragUpdateRef.current) {
+      const { id, x, y } = pendingDragUpdateRef.current;
+      onUpdateComponent(id, { x, y });
+      pendingDragUpdateRef.current = null;
+    }
+
     setDraggingComponent(null);
     setWiringState(prev => (prev && prev.mode === 'update' ? null : prev));
   };
-  
+
   const handleComponentMouseDown = (e: React.MouseEvent, component: ComponentInstance) => {
       e.stopPropagation();
       handleSelectComponent(component.id);
@@ -593,7 +678,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
       setDraggingComponent({ id: component.id, offsetX, offsetY });
   };
-  
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const data = e.dataTransfer.getData('application/json');
@@ -606,17 +691,17 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     const rect = parent.getBoundingClientRect();
     const dropX = (e.clientX - rect.left - x) / scale - (componentWidth / 2);
     const dropY = (e.clientY - rect.top - y) / scale - (componentHeight / 2);
-    
+
     onAddComponent(type, { ...defaults, x: dropX, y: dropY });
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
-  
+
   const registerComponentRef = useCallback((id: string, el: HTMLElement | null) => {
       if (el) {
-          componentRefs.current[id] = el as HTMLElement & {wokwiComponentType?: string};
+          componentRefs.current[id] = el as HTMLElement & {componentType?: string};
       } else {
           delete componentRefs.current[id];
       }
@@ -636,7 +721,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       const component = componentDataMap.get(pinId.componentId);
       const meta = componentMetaMap.get(pinId.componentId);
       if (!component || !meta) return null;
-      
+
       const pinInfo = meta.pins.find(p => p.name === pinId.pinName);
       if (!pinInfo) return null;
 
@@ -724,11 +809,11 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   }, [wires, getPinPosition]);
 
   const gridDotColor = theme === 'dark' ? '#3E3E42' : '#8884';
-  
+
   return (
-    <div 
+    <div
         ref={containerRef}
-        className={`flex-1 bg-gray-200 dark:bg-gray-900 overflow-hidden relative h-full w-full ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}
+        className={`flex-1 bg-gray-200 dark:bg-gray-900 overflow-hidden relative h-full w-full select-none ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}
         style={{
             backgroundImage: `radial-gradient(circle, ${gridDotColor} 1px, transparent 1px)`,
             backgroundSize: `${20 * transformRef.current.scale}px ${20 * transformRef.current.scale}px`,
@@ -742,7 +827,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
     >
-      <SimulationToolbar 
+      <SimulationToolbar
         onZoomIn={() => handleZoom(1.2, containerRef.current!.clientWidth / 2, containerRef.current!.clientHeight / 2)}
         onZoomOut={() => handleZoom(1 / 1.2, containerRef.current!.clientWidth / 2, containerRef.current!.clientHeight / 2)}
         onFit={handleFitToView}
@@ -779,12 +864,12 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
                     const dx = toPos.x - startPos.x;
                     const dy = toPos.y - startPos.y;
-                    
+
                     const midX = startPos.x + dx / 2;
                     const midY = startPos.y + dy / 2;
-                    
+
                     const sag = Math.sqrt(dx * dx + dy * dy) * 0.2;
-                    
+
                     const pathData = `M ${startPos.x} ${startPos.y} Q ${midX} ${midY + sag} ${toPos.x} ${toPos.y}`;
 
                     return <path d={pathData} fill="none" stroke="#3b82f6" strokeWidth={2} strokeDasharray="5,5" pointerEvents="none" />;
@@ -792,12 +877,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             )}
         </svg>
 
-        <div style={{ position: 'absolute', top: BOARD_INITIAL_POS.y, left: BOARD_INITIAL_POS.x }}>
-            <Board 
+        <div style={{ position: 'absolute', top: boardPosition.y, left: boardPosition.x }}>
+            <Board
                 boardType={board}
-                ref={(el: HTMLElement | null) => registerComponentRef(BOARD_ID, el)}
+                ref={(el: HTMLElement | null) => {
+                  if (el) registerComponentRef(BOARD_ID, el);
+                }}
                 onPinMouseDown={handlePinMouseDown}
                 onPinMouseUp={handlePinMouseUp}
+                position={boardPosition}
+                onPositionChange={setBoardPosition}
             />
         </div>
         {components.map(comp => (
@@ -813,9 +902,10 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           />
         ))}
       </div>
-      <SimulationStatusBar 
+      <SimulationStatusBar
         simulationTime={simulationTime}
         simulationSpeed={simulationSpeed}
+        simulationFPS={simulationFPS}
         zoom={transformRef.current.scale}
         coords={mouseCoords}
       />

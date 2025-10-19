@@ -32,7 +32,7 @@ export const Led = forwardRef<HTMLDivElement, LedProps>(({ color = '#ff0000' }, 
   const glowId = `led-glow-${color}-${Math.random()}`;
 
   return (
-    <div ref={internalRef}>
+    <div ref={internalRef} style={{ userSelect: 'none' }} className="select-none">
       <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">

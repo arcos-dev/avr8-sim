@@ -11,15 +11,13 @@ import 'prismjs/themes/prism-tomorrow.css';
 import { PlayIcon } from './icons/PlayIcon';
 import { PropertiesPanel } from './PropertiesPanel';
 import { SerialPlotter } from './SerialPlotter';
+import { Splitter } from './Splitter';
 import { TrashIcon } from './icons/TrashIcon';
 import { TerminalIcon } from './icons/TerminalIcon';
 import { ChartLineIcon } from './icons/ChartLineIcon';
 import type {
-  ComponentInstance,
   CodeFile,
   CodeLanguage,
-  PinConnectionMap,
-  PinConnectionTarget,
 } from '../types';
 
 interface CodeEditorProps {
@@ -33,19 +31,12 @@ interface CodeEditorProps {
   onCompileAndRun: (file: CodeFile | null) => void;
   compilerOutput: string;
   compiling: boolean;
-  selectedComponent: ComponentInstance | null;
-  selectedComponentPins: any[] | null;
-  selectedComponentConnections: PinConnectionMap;
-  onUpdateComponent: (id: string, updates: Partial<ComponentInstance>) => void;
-  onDeleteComponent: (id: string) => void;
-  onRemoveConnection: (componentId: string, pinName: string, target: PinConnectionTarget) => void;
   serialOutput: string;
   onSerialInput: (data: string) => void;
   onClearSerialOutput: () => void;
   running: boolean;
 }
 
-type MainTab = 'code' | 'properties';
 type BottomTab = 'output' | 'serial';
 type SerialView = 'text' | 'plotter';
 
@@ -56,6 +47,9 @@ const PRISM_LANGUAGE_MAP: Record<CodeLanguage, string> = {
   asm: 'asm6502',
   markdown: 'markdown',
 };
+
+// Key for localStorage
+const BOTTOM_PANEL_HEIGHT_KEY = 'avr_bottom_panel_height';
 
 const highlightCode = (code: string, language: CodeLanguage) => {
   const prismLanguage = PRISM_LANGUAGE_MAP[language] ?? 'clike';
@@ -74,21 +68,19 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   onCompileAndRun,
   compilerOutput,
   compiling,
-  selectedComponent,
-  selectedComponentPins,
-  selectedComponentConnections,
-  onUpdateComponent,
-  onDeleteComponent,
-  onRemoveConnection,
   serialOutput,
   onSerialInput,
   onClearSerialOutput,
   running,
 }) => {
-  const [mainTab, setMainTab] = useState<MainTab>('code');
   const [bottomTab, setBottomTab] = useState<BottomTab>('output');
   const [serialView, setSerialView] = useState<SerialView>('plotter');
   const [serialInputValue, setSerialInputValue] = useState('');
+  const [bottomPanelHeight, setBottomPanelHeight] = useState(() => {
+    const saved = localStorage.getItem(BOTTOM_PANEL_HEIGHT_KEY);
+    const val = saved ? parseInt(saved, 10) : 192;
+    return isNaN(val) ? 192 : Math.max(100, Math.min(val, 600));
+  });
   const serialOutputRef = useRef<HTMLPreElement>(null);
   const firstRunRef = useRef(true);
 
@@ -99,14 +91,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       onSelectFile(files[0].id);
     }
   }, [activeFile, files, onSelectFile]);
-
-  useEffect(() => {
-    if (selectedComponent) {
-      setMainTab('properties');
-    } else {
-      setMainTab('code');
-    }
-  }, [selectedComponent]);
 
   useEffect(() => {
     if (firstRunRef.current) {
@@ -129,6 +113,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     }
   }, [serialOutput, bottomTab, serialView]);
 
+  useEffect(() => {
+    localStorage.setItem(BOTTOM_PANEL_HEIGHT_KEY, bottomPanelHeight.toString());
+  }, [bottomPanelHeight]);
+
   const highlight = useMemo(() => {
     const language = activeFile?.language ?? 'arduino';
     return (code: string) => highlightCode(code, language);
@@ -148,6 +136,13 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     }
   };
 
+  const handleBottomPanelResize = (delta: number) => {
+    setBottomPanelHeight((prev) => {
+      const newHeight = prev - delta; // Subtract because dragging down increases the panel (inverted Y axis)
+      return Math.max(100, Math.min(600, newHeight)); // Min 100px, max 600px
+    });
+  };
+
   const renderSerialContent = () => {
     if (!running) {
       return <div className="p-4 text-sm text-gray-500">Start the simulation to interact with the Serial Monitor.</div>;
@@ -156,7 +151,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     if (serialView === 'text') {
       return (
         <div className="h-full flex flex-col bg-gray-100 dark:bg-gray-800">
-          <pre ref={serialOutputRef} className="p-4 text-xs whitespace-pre-wrap flex-1 overflow-y-auto">
+          <pre ref={serialOutputRef} className="p-4 text-xs whitespace-pre-wrap flex-1 overflow-y-auto auto-scrollbar select-text">
             {serialOutput || 'Serial output will appear here...'}
           </pre>
           <div className="p-2 border-t border-gray-200 dark:border-gray-700 flex items-center space-x-2 bg-white dark:bg-gray-900">
@@ -181,7 +176,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
     return (
       <div className="h-full bg-gray-100 dark:bg-gray-800">
-        <SerialPlotter data={serialOutput} />
+        <SerialPlotter serialOutput={serialOutput} />
       </div>
     );
   };
@@ -193,7 +188,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const canRemoveFile = files.length > 1;
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700">
+    <div className="flex flex-col h-full bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 select-none">
       <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
           <span className="font-semibold">Arquivos do Projeto</span>
@@ -251,60 +246,29 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         </button>
       </div>
 
-      <div className="flex border-b border-gray-200 dark:border-gray-700 shrink-0">
-        <button onClick={() => setMainTab('code')} className={`px-4 py-2 text-sm font-semibold ${mainTab === 'code' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
-          Code
-        </button>
-        <button
-          onClick={() => selectedComponent && setMainTab('properties')}
-          disabled={!selectedComponent}
-          className={`px-4 py-2 text-sm font-semibold ${selectedComponent ? (mainTab === 'properties' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-300' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800') : 'text-gray-400 cursor-not-allowed'}`}
-        >
-          Properties
-        </button>
-      </div>
-
       <div className="flex-1 overflow-hidden">
-        {mainTab === 'code' && (
-          <div className="h-full overflow-auto bg-gray-50 dark:bg-gray-900">
-            {activeFile ? (
-              <Editor
-                value={activeFile.content}
-                onValueChange={(value) => onUpdateFile(activeFile.id, value)}
-                highlight={highlight}
-                padding={16}
-                textareaClassName="outline-none"
-                preClassName="language-clike"
-                className="text-sm font-mono text-gray-900 dark:text-gray-100"
-                style={{ minHeight: '100%' }}
-                spellCheck={false}
-              />
-            ) : (
-              <div className="p-6 text-sm text-gray-500">Crie um arquivo para começar a editar o código.</div>
-            )}
-          </div>
-        )}
-        {mainTab === 'properties' && selectedComponent && (
-          <div className="h-full overflow-y-auto">
-            <PropertiesPanel
-              key={selectedComponent.id}
-              component={selectedComponent}
-              pins={selectedComponentPins}
-              connections={selectedComponentConnections}
-              onUpdate={onUpdateComponent}
-              onDelete={onDeleteComponent}
-              onRemoveConnection={onRemoveConnection}
+        <div className="h-full overflow-auto bg-gray-50 dark:bg-gray-900 auto-scrollbar select-text">
+          {activeFile ? (
+            <Editor
+              value={activeFile.content}
+              onValueChange={(value) => onUpdateFile(activeFile.id, value)}
+              highlight={highlight}
+              padding={16}
+              textareaClassName="outline-none"
+              preClassName="language-clike"
+              className="text-sm font-mono text-gray-900 dark:text-gray-100"
+              style={{ minHeight: '100%' }}
+              spellCheck={false}
             />
-          </div>
-        )}
-        {mainTab === 'properties' && !selectedComponent && (
-          <div className="p-4 text-sm text-gray-500 bg-gray-100 dark:bg-gray-800 h-full">
-            Select a component on the canvas to see its properties.
-          </div>
-        )}
+          ) : (
+            <div className="p-6 text-sm text-gray-500">Crie um arquivo para começar a editar o código.</div>
+          )}
+        </div>
       </div>
 
-      <div className="h-48 flex flex-col border-t border-gray-200 dark:border-gray-700">
+      <Splitter onResize={handleBottomPanelResize} orientation="horizontal" className="w-full" />
+
+      <div className="flex flex-col border-t border-gray-200 dark:border-gray-700" style={{ height: `${bottomPanelHeight}px` }}>
         <div className="p-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-white dark:bg-gray-900">
           <div className="flex space-x-4">
             <button
@@ -351,7 +315,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         </div>
         <div className="flex-1 overflow-hidden bg-gray-100 dark:bg-gray-800">
           {bottomTab === 'output' && (
-            <pre className="p-4 bg-gray-100 dark:bg-gray-800 text-xs whitespace-pre-wrap h-full overflow-y-auto">
+            <pre className="p-4 bg-gray-100 dark:bg-gray-800 text-xs whitespace-pre-wrap h-full overflow-y-auto auto-scrollbar select-text">
               {compilerOutput || 'Output will appear here...'}
             </pre>
           )}

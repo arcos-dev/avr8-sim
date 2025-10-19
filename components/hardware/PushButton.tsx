@@ -5,7 +5,7 @@ export interface PushButtonProps {
 }
 
 export const PushButton = React.forwardRef<HTMLDivElement, PushButtonProps>(({ color = '#3b82f6' }, ref) => {
-  
+
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     e.currentTarget.dispatchEvent(new Event('button-press', { bubbles: true }));
   };
@@ -15,13 +15,13 @@ export const PushButton = React.forwardRef<HTMLDivElement, PushButtonProps>(({ c
   };
 
   return (
-    <div 
-      ref={ref} 
-      onMouseDown={handleMouseDown} 
-      onMouseUp={handleMouseUp} 
-      onMouseLeave={handleMouseUp} 
-      style={{ touchAction: 'none' }}
-      className="cursor-pointer"
+    <div
+      ref={ref}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      style={{ touchAction: 'none', userSelect: 'none' }}
+      className="cursor-pointer select-none"
     >
       <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
         <g>

@@ -9,6 +9,7 @@ import { buildHex } from './services/compiler';
 import { Splitter } from './components/Splitter';
 import type { AVRRunner } from './services/simulation/runner';
 import { SettingsModal } from './components/SettingsModal';
+import { idGenerator } from './services/idGenerator';
 
 const initialCode = `
 // Example for Serial Plotter
@@ -69,8 +70,21 @@ function App() {
     return isNaN(val) ? 192 : Math.max(160, Math.min(val, 500));
   });
 
-  const [editorSize, setEditorSize] = useState(350);
   const [isXlLayout, setIsXlLayout] = useState(window.matchMedia('(min-width: 1280px)').matches);
+  const [editorSize, setEditorSize] = useState(() => {
+    const isXl = window.matchMedia('(min-width: 1280px)').matches;
+    if (isXl) {
+      const saved = localStorage.getItem(EDITOR_SIZE_XL_KEY);
+      const defaultSize = window.innerWidth / 3.5;
+      const val = saved ? parseInt(saved, 10) : defaultSize;
+      return isNaN(val) ? defaultSize : Math.max(300, val);
+    } else {
+      const saved = localStorage.getItem(EDITOR_SIZE_SM_KEY);
+      const defaultSize = 320;
+      const val = saved ? parseInt(saved, 10) : defaultSize;
+      return isNaN(val) ? defaultSize : Math.max(200, val);
+    }
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 1280px)');
@@ -192,6 +206,10 @@ function App() {
     setComponentPins(prev => ({ ...prev, [componentId]: pins }));
   }, []);
 
+  const handleCanvasBackgroundClick = useCallback(() => {
+    setSelectedComponentId(null);
+  }, []);
+
   const handleCompileAndRun = async (source: string) => {
     // Proactively check compiler status before attempting to fetch
     if (compilerStatus !== 'ok') {
@@ -301,6 +319,20 @@ function App() {
             <ComponentPalette
               onAddComponent={handleAddComponent}
               dragPreviewRef={dragPreviewRef}
+              selectedComponent={selectedComponent}
+              selectedComponentPins={selectedComponentPinInfo}
+              selectedComponentConnections={selectedComponent ? (selectedComponent.connections || {}) : {}}
+              onUpdateComponent={handleUpdateComponent}
+              onDeleteComponent={handleDeleteComponent}
+              onRemoveConnection={(componentId, pinName, target) => {
+                handleUpdateComponent(componentId, {
+                  connections: {
+                    ...((components.find(c => c.id === componentId)?.connections) || {}),
+                    [pinName]: ((components.find(c => c.id === componentId)?.connections?.[pinName] as any[]) || [])
+                      .filter((t: any) => !(t.component === target.component && t.pin === target.pin))
+                  }
+                });
+              }}
             />
           </div>
           <Splitter
@@ -319,10 +351,6 @@ function App() {
                 onCompileAndRun={handleCompileAndRun}
                 compilerOutput={compilerOutput}
                 compiling={compiling}
-                selectedComponent={selectedComponent}
-                selectedComponentPins={selectedComponentPinInfo}
-                onUpdateComponent={handleUpdateComponent}
-                onDeleteComponent={handleDeleteComponent}
                 serialOutput={serialOutput}
                 onSerialInput={handleSerialInput}
                 onClearSerialOutput={handleClearSerialOutput}
@@ -346,6 +374,7 @@ function App() {
                 hex={hex}
                 selectedComponentId={selectedComponentId}
                 onSelectComponent={setSelectedComponentId}
+                onCanvasBackgroundClick={handleCanvasBackgroundClick}
                 onSerialOutput={handleSerialOutput}
                 setRunner={setRunner}
               />

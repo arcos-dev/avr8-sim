@@ -66,16 +66,23 @@ export const Wire: React.FC<WireProps> = ({
 }) => {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
-  const midX = from.x + dx / 2;
-  const midY = from.y + dy / 2;
-  const length = Math.hypot(dx, dy);
-  
-  // This creates a nice curve that bows out perpendicularly from the center of the wire,
-  // giving it a flexible, physical appearance.
-  const perpX = -dy * 0.2;
-  const perpY = dx * 0.2;
-  
-  const pathData = `M ${from.x} ${from.y} Q ${midX + perpX} ${midY + perpY} ${to.x} ${to.y}`;
+  const distance = Math.hypot(dx, dy);
+
+  // Calculate cable sag and tension for flexible cable appearance (like vintage synthesizer cables)
+  const baseSag = Math.min(distance * 0.15, 60);
+  const tensionFactor = Math.max(0.3, 1 - (distance / 400));
+  const sagAmount = baseSag * tensionFactor;
+
+  const horizontalStretch = Math.abs(dx) * 0.3;
+  const verticalInfluence = Math.abs(dy) * 0.1;
+
+  const control1X = from.x + (dx > 0 ? horizontalStretch : -horizontalStretch);
+  const control1Y = from.y + sagAmount * 0.4 + verticalInfluence;
+  const control2X = to.x - (dx > 0 ? horizontalStretch : -horizontalStretch);
+  const control2Y = to.y + sagAmount * 0.4 + verticalInfluence;
+
+  const pathData = `M ${from.x} ${from.y} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${to.x} ${to.y}`;
+  const length = distance;
   const showFlow =
     simulateElectronFlow &&
     runtimeState &&
@@ -95,7 +102,7 @@ export const Wire: React.FC<WireProps> = ({
   const animationReverseTarget = dashOffset.toString();
 
   return (
-    <g 
+    <g
       onClick={(e) => { e.stopPropagation(); onClick(id); }}
       className="cursor-pointer"
     >

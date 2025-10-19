@@ -59,6 +59,8 @@ const BOARD_COMPONENT_ID = 'board';
 const SIM_SETTINGS_KEY = 'avr_simulation_settings';
 const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   simulateElectronFlow: true,
+  simulationSpeedMode: 'realistic',
+  renderingFPS: 'unlimited',
 };
 const DEFAULT_PROJECT_NAME = 'Meu Projeto';
 
@@ -116,6 +118,7 @@ function App() {
   const [hex, setHex] = useState<string>('');
   const [compilerOutput, setCompilerOutput] = useState('');
   const [compiling, setCompiling] = useState(false);
+  const componentCountersRef = useRef<Record<string, number>>({});
   const [componentPins, setComponentPins] = useState<Record<string, any[]>>({});
   const [serialOutput, setSerialOutput] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -154,14 +157,48 @@ function App() {
     return isNaN(val) ? 192 : Math.max(160, Math.min(val, 500));
   });
 
-  const [editorSize, setEditorSize] = useState(350);
   const [isXlLayout, setIsXlLayout] = useState(window.matchMedia('(min-width: 1280px)').matches);
+
+  const [editorSize, setEditorSize] = useState(() => {
+    const isXl = window.matchMedia('(min-width: 1280px)').matches;
+    if (isXl) {
+      const saved = localStorage.getItem(EDITOR_SIZE_XL_KEY);
+      const defaultSize = window.innerWidth / 3.5;
+      const val = saved ? parseInt(saved, 10) : defaultSize;
+      return isNaN(val) ? defaultSize : Math.max(300, val);
+    } else {
+      const saved = localStorage.getItem(EDITOR_SIZE_SM_KEY);
+      const defaultSize = 320;
+      const val = saved ? parseInt(saved, 10) : defaultSize;
+      return isNaN(val) ? defaultSize : Math.max(200, val);
+    }
+  });
   const activeFile = useMemo(() => {
     if (codeFiles.length === 0) {
       return null;
     }
     return codeFiles.find(file => file.id === activeFileId) ?? codeFiles[0];
   }, [codeFiles, activeFileId]);
+
+  // Sync component counters with existing components
+  useEffect(() => {
+    const counters: Record<string, number> = {};
+
+    // Find the highest number for each component type
+    components.forEach(component => {
+      const match = component.id.match(/^(.+)-(\d+)$/);
+      if (match) {
+        const [, type, numStr] = match;
+        const num = parseInt(numStr, 10);
+        if (!isNaN(num)) {
+          counters[type] = Math.max(counters[type] || 0, num);
+        }
+      }
+    });
+
+    // Update the ref with the current highest counters
+    componentCountersRef.current = counters;
+  }, [components]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 1280px)');
@@ -213,13 +250,13 @@ function App() {
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s timeout
-        
-        const resp = await fetch(buildServerUrl + '/build', { 
-          method: 'OPTIONS', 
-          mode: 'cors', 
-          signal: controller.signal 
+
+        const resp = await fetch(buildServerUrl + '/build', {
+          method: 'OPTIONS',
+          mode: 'cors',
+          signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
 
         if (resp.ok) {
@@ -245,7 +282,7 @@ function App() {
   const handleSerialOutput = useCallback((char: string) => {
     setSerialOutput(prev => prev + char);
   }, []);
-  
+
   const handleClearSerialOutput = useCallback(() => {
     setSerialOutput('');
   }, []);
@@ -258,9 +295,22 @@ function App() {
     [setBuildServerUrl, setSimulationSettings]
   );
 
+  const generateComponentId = (type: string): string => {
+    // Initialize counter for this type if it doesn't exist
+    if (!componentCountersRef.current[type]) {
+      componentCountersRef.current[type] = 0;
+    }
+
+    // Increment counter
+    componentCountersRef.current[type]++;
+
+    // Generate sequential ID
+    return `${type}-${componentCountersRef.current[type]}`;
+  };
+
   const handleAddComponent = (type: string, defaults: Record<string, any>) => {
     const newComponent: ComponentInstance = {
-      id: `${type}-${Date.now()}`,
+      id: generateComponentId(type),
       type,
       x: 100 + (components.length % 5) * 50,
       y: 100 + (components.length % 5) * 50,
@@ -468,10 +518,10 @@ function App() {
     }
 
     if (compilerStatus !== 'ok') {
-      const statusMessage = compilerStatus === 'error' 
+      const statusMessage = compilerStatus === 'error'
           ? `Could not connect to the build server at: ${buildServerUrl}`
           : 'Still checking build server status. Please wait a moment.';
-      
+
       const helpMessage = `Please ensure your local Python build server is running correctly. Refer to the banner at the top of the page for setup instructions.`;
 
       setCompilerOutput(`${statusMessage}\n\n${helpMessage}`);
@@ -576,8 +626,8 @@ function App() {
   return (
     <ThemeProvider>
       <div className="flex flex-col h-screen font-sans text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-900">
-        <Header 
-          board={board} 
+        <Header
+          board={board}
           setBoard={setBoard}
           projectName={projectName}
           onRenameProject={handleRenameProject}
@@ -598,13 +648,19 @@ function App() {
           </div>
         )}
         <main className="flex flex-1 overflow-hidden">
-          <div 
-            style={{ width: `${paletteWidth}px` }} 
+          <div
+            style={{ width: `${paletteWidth}px` }}
             className="hidden md:flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
           >
-            <ComponentPalette 
-              onAddComponent={handleAddComponent} 
+            <ComponentPalette
+              onAddComponent={handleAddComponent}
               dragPreviewRef={dragPreviewRef}
+              selectedComponent={selectedComponent}
+              selectedComponentPins={selectedComponentPinInfo}
+              selectedComponentConnections={selectedComponentConnections}
+              onUpdateComponent={handleUpdateComponent}
+              onDeleteComponent={handleDeleteComponent}
+              onRemoveConnection={handleRemoveConnection}
             />
           </div>
           <Splitter
@@ -618,7 +674,7 @@ function App() {
               className="relative flex flex-col shrink-0"
               style={isXlLayout ? { width: `${editorSize}px` } : { height: `${editorSize}px` }}
             >
-              <CodeEditor 
+              <CodeEditor
                 files={codeFiles}
                 activeFileId={activeFileId}
                 onSelectFile={handleSelectFile}
@@ -626,7 +682,7 @@ function App() {
                 onDeleteFile={handleDeleteFile}
                 onRenameFile={handleRenameFile}
                 onUpdateFile={handleUpdateFileContent}
-                onCompileAndRun={handleCompileAndRun} 
+                onCompileAndRun={handleCompileAndRun}
                 compilerOutput={compilerOutput}
                 compiling={compiling}
                 selectedComponent={selectedComponent}
@@ -648,8 +704,8 @@ function App() {
             />
 
             <div className="flex-1 relative overflow-hidden">
-              <SimulationCanvas 
-                components={components} 
+              <SimulationCanvas
+                components={components}
                 wires={wires}
                 onUpdateComponent={handleUpdateComponent}
                 onAddComponent={handleAddComponent}
@@ -666,6 +722,8 @@ function App() {
                 onSerialOutput={handleSerialOutput}
                 setRunner={setRunner}
                 simulateElectronFlow={simulationSettings.simulateElectronFlow}
+                simulationSpeedMode={simulationSettings.simulationSpeedMode}
+                simulationSettings={simulationSettings}
               />
             </div>
           </div>

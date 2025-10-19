@@ -38,47 +38,62 @@ export const SerialPlotter: React.FC<SerialPlotterProps> = ({ serialOutput }) =>
   const [zoom, setZoom] = useState(1);
 
   useEffect(() => {
+    // Debug: log incoming data
+    console.log('SerialPlotter received:', {
+      serialOutput: serialOutput?.substring(0, 100),
+      length: serialOutput?.length,
+      lastProcessedIndex: lastProcessedIndex.current,
+    });
+
     // Handle the "Clear Output" case
-    if (serialOutput.length === 0 && lastProcessedIndex.current > 0) {
+    if (!serialOutput || (serialOutput.length === 0 && lastProcessedIndex.current > 0)) {
         setData([]);
         lastProcessedIndex.current = 0;
         incompleteLineRef.current = '';
         return;
     }
 
+    // Don't process if no new data
+    if (!serialOutput || serialOutput.length <= lastProcessedIndex.current) {
+      return;
+    }
+
     // Process new incoming data
-    if (serialOutput.length > lastProcessedIndex.current) {
-      const newChunk = serialOutput.substring(lastProcessedIndex.current);
-      lastProcessedIndex.current = serialOutput.length;
+    const newChunk = serialOutput.substring(lastProcessedIndex.current);
+    lastProcessedIndex.current = serialOutput.length;
 
-      const fullBuffer = incompleteLineRef.current + newChunk;
-      const lines = fullBuffer.split('\n');
-      
-      // The last item in the array is either an empty string or an incomplete line
-      incompleteLineRef.current = lines.pop() || '';
-      
-      if (lines.length === 0) {
-        return; // No complete lines to process yet
-      }
-      
-      const newPoints = lines
-        .map(line => 
-          line.split(',')
-              .map(val => parseFloat(val.trim()))
-              .filter(num => !isNaN(num))
-        )
-        .filter(point => point.length > 0);
+    const fullBuffer = incompleteLineRef.current + newChunk;
+    const lines = fullBuffer.split('\n');
 
-      if (newPoints.length > 0) {
-        setData(prevData => {
-          // If the number of variables changes, reset the buffer with the new points
-          if (prevData.length > 0 && newPoints[0].length !== prevData[prevData.length - 1].length) {
-            return newPoints.slice(-MAX_DATA_POINTS);
-          }
-          const combined = [...prevData, ...newPoints];
-          return combined.slice(-MAX_DATA_POINTS);
-        });
-      }
+    // The last item in the array is either an empty string or an incomplete line
+    incompleteLineRef.current = lines.pop() || '';
+
+    if (lines.length === 0) {
+      return; // No complete lines to process yet
+    }
+
+    const newPoints = lines
+      .map(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return [];
+        return trimmed.split(',')
+            .map(val => parseFloat(val.trim()))
+            .filter(num => !isNaN(num));
+      })
+      .filter(point => point.length > 0);
+
+    console.log('Parsed newPoints:', newPoints);
+
+    if (newPoints.length > 0) {
+      setData(prevData => {
+        console.log('Setting data:', { prevLength: prevData.length, newPoints: newPoints.length });
+        // If the number of variables changes, reset the buffer with the new points
+        if (prevData.length > 0 && newPoints[0].length !== prevData[prevData.length - 1].length) {
+          return newPoints.slice(-MAX_DATA_POINTS);
+        }
+        const combined = [...prevData, ...newPoints];
+        return combined.slice(-MAX_DATA_POINTS);
+      });
     }
   }, [serialOutput]);
 
@@ -116,8 +131,8 @@ export const SerialPlotter: React.FC<SerialPlotterProps> = ({ serialOutput }) =>
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = themeColors.bg;
       ctx.fillRect(0, 0, width, height);
-      
-      const pointsToShow = Math.floor(data.length / zoom);
+
+      const pointsToShow = Math.max(2, Math.floor(data.length / zoom));
       const visibleData = data.slice(-pointsToShow);
 
       if (visibleData.length < 2) {
@@ -127,11 +142,11 @@ export const SerialPlotter: React.FC<SerialPlotterProps> = ({ serialOutput }) =>
         ctx.fillText('Waiting for data...', width / 2, height / 2);
         return;
       }
-      
+
       const flatVisibleData = visibleData.flat();
       let yMin = Math.min(...flatVisibleData);
       let yMax = Math.max(...flatVisibleData);
-      
+
       if (yMin === yMax) {
         yMin -= 10;
         yMax += 10;
@@ -154,7 +169,7 @@ export const SerialPlotter: React.FC<SerialPlotterProps> = ({ serialOutput }) =>
       for (let i = 0; i <= numYGridLines; i++) {
           const y = PADDING.top + (i / numYGridLines) * plotHeight;
           const value = yMax - (i / numYGridLines) * effectiveYRange;
-          
+
           ctx.beginPath();
           ctx.moveTo(PADDING.left, y);
           ctx.lineTo(width - PADDING.right, y);
@@ -170,13 +185,15 @@ export const SerialPlotter: React.FC<SerialPlotterProps> = ({ serialOutput }) =>
         ctx.strokeStyle = PLOT_COLORS[varIndex % PLOT_COLORS.length];
         ctx.lineWidth = 2 * window.devicePixelRatio;
         ctx.beginPath();
-        
+
         visibleData.forEach((point, i) => {
           if (point.length <= varIndex) return;
 
-          const x = PADDING.left + (i / (visibleData.length - 1)) * plotWidth;
+          const x = visibleData.length > 1
+            ? PADDING.left + (i / (visibleData.length - 1)) * plotWidth
+            : PADDING.left + plotWidth / 2;
           const y = PADDING.top + (1 - (point[varIndex] - yMin) / effectiveYRange) * plotHeight;
-          
+
           if (i === 0) {
             ctx.moveTo(x, y);
           } else {
